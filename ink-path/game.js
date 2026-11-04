@@ -223,13 +223,13 @@
     A.mountains(g, W, H, 9, 0.8);
   }
   function buildTitle() {
-    var size = Math.min(W * 0.62, H * 0.42, 420);
+    var size = W > H * 1.1 ? Math.min(H * 0.72, W * 0.42, 520) : Math.min(W * 0.82, H * 0.44, 460);
     var c = A.makeCanvas(size, size, DPR), g = c.getContext('2d');
     g.scale(DPR, DPR);
     var cx = size / 2, cy = size / 2;
     // vermilion sun
-    g.fillStyle = 'rgba(217,69,43,0.88)';
-    g.beginPath(); g.arc(cx + size * 0.2, cy - size * 0.2, size * 0.13, 0, 6.283); g.fill();
+    g.fillStyle = 'rgba(217,69,43,0.85)';
+    g.beginPath(); g.arc(cx + size * 0.3, cy - size * 0.33, size * 0.1, 0, 6.283); g.fill();
     A.enso(g, cx, cy, size * 0.4, size * 0.07, 5, 0.85);
     var h = size * 0.25;
     var w1 = A.wordWidth('INK') * h, w2 = A.wordWidth('PATH') * h;
@@ -501,14 +501,16 @@
     opt.tin = 5 * F.s; opt.tout = 16 * F.s; opt.bleed = 3 * F.s;
     A.brush(ctx, SP, SW, n, opt);
   }
-  var strokeOpt = { color: '43,38,34', alpha: 1, wet: 0, dry: true, tin: 0, tout: 0, bleed: 0, progress: 1 };
+  var strokeOpt = { color: '43,38,34', alpha: 1, wet: 0, dry: true, tin: 0, tout: 0, bleed: 0, progress: 1, wobble: 0.22, seed: 0 };
   function drawStrokes() {
     var i, j;
     for (i = 0; i < G.strokes.length; i++) {
       var s = G.strokes[i];
       strokeOpt.wet = s.wet; strokeOpt.alpha = 0.92 + 0.06 * (1 - s.wet); strokeOpt.progress = 1; strokeOpt.color = s.wet > 0.01 ? '48,44,52' : '43,38,34';
+      strokeOpt.seed = i * 1.7 + 0.5;
       for (j = 0; j < s.polys.length; j++) drawPoly(s.polys[j], s.ws[j], strokeOpt);
     }
+    strokeOpt.seed = G.strokes.length * 1.7 + 0.5;
     if (drawing) {
       var b = drawing.b;
       strokeOpt.wet = 1; strokeOpt.alpha = 0.92; strokeOpt.color = '48,44,52';
@@ -654,14 +656,15 @@
     ctx.fillStyle = '#4A433D'; ctx.beginPath(); ctx.ellipse(px, py - pr * 0.25, pr * 0.72, pr * 0.3, 0, 0, 6.283); ctx.fill();
     ctx.fillStyle = PAL.ink; ctx.beginPath(); ctx.ellipse(px, py - pr * 0.25, pr * (0.2 + 0.5 * left), pr * 0.18 * (0.3 + left), 0, 0, 6.283); ctx.fill();
     // bar
-    var bx = x + pr * 2 + 10, sealS = h * 0.5, bw = w - (bx - x) - sealS * 3 - 16, by = py, bh = Math.max(6, h * 0.32);
+    var bx = x + pr * 2 + 10, sealS = h * 0.5, bw = w - (bx - x) - sealS * 3 - 26, by = py, bh = Math.max(6, h * 0.32);
     ctx.lineCap = 'round';
     ctx.strokeStyle = 'rgba(43,38,34,0.13)'; ctx.lineWidth = bh; ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(bx + bw, by); ctx.stroke();
     if (left > 0.002) {
       SP[0] = bx; SP[1] = by; SP[2] = bx + bw * left; SP[3] = by;
       SW[0] = bh * 0.95; SW[1] = bh * 0.8;
-      strokeOpt.wet = 0; strokeOpt.alpha = 0.92; strokeOpt.progress = 1; strokeOpt.color = '43,38,34'; strokeOpt.tin = 2; strokeOpt.tout = Math.min(14, bw * left); strokeOpt.bleed = 0;
+      strokeOpt.wet = 0; strokeOpt.alpha = 0.92; strokeOpt.progress = 1; strokeOpt.color = '43,38,34'; strokeOpt.tin = 2; strokeOpt.tout = Math.min(14, bw * left); strokeOpt.bleed = 0; strokeOpt.wobble = 0;
       A.brush(ctx, SP, SW, 2, strokeOpt);
+      strokeOpt.wobble = 0.22;
     }
     // seal thresholds on the bar
     for (var q = 0; q < 2; q++) {
@@ -685,7 +688,7 @@
       text(levelLabel(), lx, y0 + b + 30, Math.min(26, lw * 0.16), PAL.ink, 'left', 800, lw);
       var bestS = save.stars[G.idx];
       for (var i = 0; i < 3; i++) A.seal(ctx, lx + 14 + i * 32, y0 + b + 66, 26, i < bestS, (i - 1) * 0.06, i < bestS ? 1 : 0.8);
-      inkMeter(lx, y0 + b + 100, Math.min(lw, 260), 34);
+      inkMeter(lx, y0 + b + 100, Math.min(lw, 280), 40);
       var cxr = rx + Math.min(rw, g * 2.4) / 2, gy = F.y + F.h * 0.5 - g;
       button('go', cxr - g / 2, gy, g, g, goOpt);
       var row = gy + g + 22;
@@ -837,7 +840,7 @@
     var tx = land ? W * 0.36 - ts / 2 : W / 2 - ts / 2, ty = land ? H / 2 - ts / 2 - 10 : H * 0.36 - ts / 2;
     ctx.drawImage(titleCanvas.c, tx, ty, ts, ts);
     // a marble rolling inside the ensō
-    var cx = tx + ts / 2, cy = ty + ts / 2, rad = ts * 0.4 - ts * 0.035 - ts * 0.045;
+    var cx = tx + ts / 2, cy = ty + ts / 2, rad = ts * 0.3;
     var ang = Math.PI / 2 + Math.sin(now * 1.3) * 0.75;
     var mr = ts * 0.045, sp = titleSprite(mr);
     A.drawMarble(ctx, sp, cx + Math.cos(ang) * rad, cy + Math.sin(ang) * rad, -Math.sin(now * 1.3) * 0.75 * rad / mr, 1);

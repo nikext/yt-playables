@@ -96,6 +96,17 @@
   var MAXP = 1024;
   var BL = new Float32Array(MAXP * 2), BR = new Float32Array(MAXP * 2), NX = new Float32Array(MAXP), NY = new Float32Array(MAXP), CL = new Float32Array(MAXP), HH = new Float32Array(MAXP);
 
+  // Rounded corner at vertex i (coming from vertex a, going to b): the outline stays on the
+  // straight segments (as the physics sees them) and only the last few px round the joint.
+  function corner(g, Q, i, a, b) {
+    var x = Q[i * 2], y = Q[i * 2 + 1];
+    var ax = Q[a * 2] - x, ay = Q[a * 2 + 1] - y, bx = Q[b * 2] - x, by = Q[b * 2 + 1] - y;
+    var la = Math.sqrt(ax * ax + ay * ay) || 1, lb = Math.sqrt(bx * bx + by * by) || 1;
+    var fa = Math.min(0.5, 5 / la), fb = Math.min(0.5, 5 / lb);
+    g.lineTo(x + ax * fa, y + ay * fa);
+    g.quadraticCurveTo(x, y, x + bx * fb, y + by * fb);
+  }
+
   // Brush stroke through n points (flat P, screen px) with full widths Wd (px, or one number).
   // opt: color 'r,g,b', alpha, wet 0..1, tin/tout taper lengths px, dry (dry-brush streaks), progress 0..1
   function brush(g, P, Wd, n, opt) {
@@ -130,6 +141,7 @@
       var s = CL[i] < lim ? CL[i] : lim, e = endL - s, f = 1;
       if (s < tin) f *= 0.55 + 0.45 * s / tin;
       if (e < tout) f *= 0.28 + 0.72 * e / tout;
+      if (opt.wobble) f *= 1 + opt.wobble * Math.sin(CL[i] * 0.035 + opt.seed) * Math.sin(CL[i] * 0.011 + opt.seed * 2.3);
       var h = (typeof Wd === 'number' ? Wd : Wd[i]) * f * 0.5;
       HH[i] = h;
       BL[i * 2] = x + NX[i] * h; BL[i * 2 + 1] = y + NY[i] * h;
@@ -137,11 +149,11 @@
     }
     g.beginPath();
     g.moveTo(BL[0], BL[1]);
-    for (i = 1; i < m - 1; i++) g.quadraticCurveTo(BL[i * 2], BL[i * 2 + 1], (BL[i * 2] + BL[i * 2 + 2]) / 2, (BL[i * 2 + 1] + BL[i * 2 + 3]) / 2);
+    for (i = 1; i < m - 1; i++) corner(g, BL, i, i - 1, i + 1);
     g.lineTo(BL[m * 2 - 2], BL[m * 2 - 1]);
     var ex = (BL[m * 2 - 2] + BR[m * 2 - 2]) / 2, ey = (BL[m * 2 - 1] + BR[m * 2 - 1]) / 2, ae = Math.atan2(NY[m - 1], NX[m - 1]);
     g.arc(ex, ey, HH[m - 1], ae, ae - Math.PI, true);
-    for (i = m - 2; i > 0; i--) g.quadraticCurveTo(BR[i * 2], BR[i * 2 + 1], (BR[i * 2] + BR[i * 2 - 2]) / 2, (BR[i * 2 + 1] + BR[i * 2 - 1]) / 2);
+    for (i = m - 2; i > 0; i--) corner(g, BR, i, i + 1, i - 1);
     g.lineTo(BR[0], BR[1]);
     var a0 = Math.atan2(NY[0], NX[0]);
     g.arc((BL[0] + BR[0]) / 2, (BL[1] + BR[1]) / 2, HH[0], a0 + Math.PI, a0, true);
