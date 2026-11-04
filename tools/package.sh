@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Package each game into dist/<game>.zip, ready to upload (index.html at the zip root).
-# Usage: tools/package.sh [game ...]   (default: all three games)
+# Usage: tools/package.sh [game ...]   (default: all games)
 set -euo pipefail
 cd "$(dirname "$0")/.."
 games=("$@")
-[ ${#games[@]} -eq 0 ] && games=(prism-runner lantern-links island-ferry)
+[ ${#games[@]} -eq 0 ] && games=(prism-runner lantern-links island-ferry ink-path night-drift kicks-lab)
 mkdir -p dist
 for g in "${games[@]}"; do
   node tools/check-bundle.mjs "$g"
