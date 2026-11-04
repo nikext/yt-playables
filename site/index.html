@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pastel Playables</title>
+  <meta name="description" content="Three original HTML5 games built for YouTube Playables: Prism Runner, Lantern Links and Island Ferry.">
+  <style>
+    :root {
+      --bg: #FFF7EE; --ink: #3D3B54; --ink-soft: #8A87A6; --card: #FFFFFF;
+      --peach: #FFB4A2; --pink: #F7A1C4; --lavender: #B9A7F5; --mint: #9EE0C5;
+      --sky: #A7D3F5; --butter: #FFE39A; --shadow: #EADFD2;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #24223A; --ink: #F4EFFA; --ink-soft: #ABA7C6; --card: #302D4A; --shadow: #1A1829; }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--ink);
+      font-family: ui-rounded, "SF Pro Rounded", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+      line-height: 1.5;
+    }
+    main { max-width: 1080px; margin: 0 auto; padding: 48px 16px 64px; }
+    header { text-align: center; margin-bottom: 40px; }
+    .dots { display: inline-flex; gap: 8px; margin-bottom: 16px; }
+    .dots span { width: 14px; height: 14px; border-radius: 50%; }
+    h1 { font-size: clamp(2rem, 6vw, 3.25rem); margin: 0 0 8px; letter-spacing: -0.02em; }
+    header p { color: var(--ink-soft); margin: 0 auto; max-width: 560px; font-size: 1.05rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+    .card {
+      background: var(--card); border-radius: 24px; overflow: hidden;
+      box-shadow: 0 0 0 2px var(--shadow), 0 6px 0 var(--shadow); display: flex; flex-direction: column;
+      text-decoration: none; color: inherit; transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .card:hover, .card:focus-visible { transform: translateY(-4px); box-shadow: 0 0 0 2px var(--shadow), 0 10px 0 var(--shadow); outline: none; }
+    .thumb { aspect-ratio: 4 / 5; overflow: hidden; display: flex; align-items: flex-start; justify-content: center; }
+    .thumb img { width: 100%; height: auto; display: block; }
+    .body { padding: 20px 22px 24px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+    .tag { align-self: flex-start; font-size: .8rem; font-weight: 700; padding: 4px 12px; border-radius: 999px; color: #3D3B54; }
+    h2 { margin: 4px 0 0; font-size: 1.4rem; }
+    .body p { margin: 0; color: var(--ink-soft); flex: 1; }
+    .play { margin-top: 12px; align-self: flex-start; font-weight: 700; padding: 10px 22px; border-radius: 999px; background: var(--butter); color: #3D3B54; box-shadow: 0 4px 0 #E8C766; }
+    footer { text-align: center; margin-top: 48px; color: var(--ink-soft); font-size: .9rem; }
+    footer a { color: inherit; }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="dots" aria-hidden="true">
+        <span style="background:var(--pink)"></span><span style="background:var(--mint)"></span><span style="background:var(--sky)"></span><span style="background:var(--butter)"></span>
+      </div>
+      <h1>Pastel Playables</h1>
+      <p>Three original games made for YouTube Playables: an arcade runner, a light puzzle and a cozy ferry sim. They play in the browser on phone or desktop, with touch, mouse or keyboard.</p>
+    </header>
+
+    <div class="grid">
+      <a class="card" href="prism-runner/">
+        <div class="thumb" style="background:#FFF7EE"><img src="shots/prism-runner.png" alt="Prism Runner title screen" loading="lazy"></div>
+        <div class="body">
+          <span class="tag" style="background:var(--pink)">Arcade</span>
+          <h2>Prism Runner</h2>
+          <p>Swipe between three lanes and change color to slip through matching gates. It keeps getting faster. Chase combos, collect shields and unlock trails.</p>
+          <span class="play">Play ▸</span>
+        </div>
+      </a>
+      <a class="card" href="lantern-links/">
+        <div class="thumb" style="background:#4A4470"><img src="shots/lantern-links.png" alt="Lantern Links puzzle with colored light beams and mirrors" loading="lazy"></div>
+        <div class="body">
+          <span class="tag" style="background:var(--lavender)">Puzzle</span>
+          <h2>Lantern Links</h2>
+          <p>Rotate and place mirrors to guide beams of light to every paper lantern. 30 handcrafted levels across three chapters, with color mixing and prisms.</p>
+          <span class="play">Play ▸</span>
+        </div>
+      </a>
+      <a class="card" href="island-ferry/">
+        <div class="thumb" style="background:#A7D3F5"><img src="shots/island-ferry.png" alt="Island Ferry map with ferry routes between islands" loading="lazy"></div>
+        <div class="body">
+          <span class="tag" style="background:var(--mint)">Casual strategy</span>
+          <h2>Island Ferry</h2>
+          <p>Draw ferry routes across a pastel archipelago and deliver the goods each island asks for before its patience runs out. Pick upgrades between days.</p>
+          <span class="play">Play ▸</span>
+        </div>
+      </a>
+    </div>
+
+    <footer>
+      <p>Vanilla JavaScript and Canvas, no dependencies, all art and sound generated in code. <a href="https://github.com/nikext/yt-playables">Source on GitHub</a></p>
+    </footer>
+  </main>
+</body>
+</html>

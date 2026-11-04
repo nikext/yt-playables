@@ -10,6 +10,10 @@ external requests.
 | **Lantern Links** | Puzzle: place and rotate mirrors to light every lantern | [`lantern-links/`](lantern-links/) |
 | **Island Ferry** | Casual management: draw ferry routes and deliver goods day by day | [`island-ferry/`](island-ferry/) |
 
+**Play online:** <https://nikext.github.io/yt-playables/>. Pushes to `main` deploy automatically via
+`.github/workflows/pages.yml`, which runs the compliance check, then publishes `site/` (the landing
+page) and the three game folders.
+
 All three share a soft pastel flat style and a common SDK wrapper.
 
 ## Repo layout
@@ -22,6 +26,7 @@ tools/check-bundle.mjs static compliance check (sizes, file names, external URLs
 tools/smoke.cjs        headless Playwright smoke test against a mock SDK
 tools/mock-ytgame.js   fake window.ytgame for local tests
 tools/package.sh       zip each game into dist/ for upload
+site/                  landing page for GitHub Pages (index.html + screenshots)
 ```
 
 ## Run locally
