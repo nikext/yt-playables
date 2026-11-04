@@ -196,7 +196,7 @@
     var pw = W - safe * 2, ph = H - safe * 2 - topH - botH - 20;
     var sP = Math.min(pw / CW, ph / CHH);
     // landscape-style: HUD in side panels
-    var side = Math.max(go * 2.6, Math.min(240, W * 0.2));
+    var side = Math.max(go * 2.6, Math.min(280, W * 0.22));
     var lw = W - side * 2 - safe * 2, lh = H - safe * 2 - 20;
     var sL = Math.min(lw / CW, lh / CHH);
     LY.land = sL > sP * 1.04;
@@ -229,7 +229,7 @@
     var cx = size / 2, cy = size / 2;
     // vermilion sun
     g.fillStyle = 'rgba(217,69,43,0.85)';
-    g.beginPath(); g.arc(cx + size * 0.3, cy - size * 0.33, size * 0.1, 0, 6.283); g.fill();
+    g.beginPath(); g.arc(cx + size * 0.34, cy - size * 0.35, size * 0.095, 0, 6.283); g.fill();
     A.enso(g, cx, cy, size * 0.4, size * 0.07, 5, 0.85);
     var h = size * 0.25;
     var w1 = A.wordWidth('INK') * h, w2 = A.wordWidth('PATH') * h;
@@ -302,7 +302,7 @@
   function makeWind(L) {
     var zones = L.wind || [], out = [];
     for (var i = 0; i < zones.length; i++) {
-      var z = zones[i], n = clamp(Math.round(z[2] * z[3] / 7000), 6, 26), arr = new Float32Array(n * 4);
+      var z = zones[i], n = clamp(Math.round(z[2] * z[3] / 4500), 8, 36), arr = new Float32Array(n * 4);
       var r = A.rng(300 + i);
       for (var j = 0; j < n; j++) { arr[j * 4] = r(); arr[j * 4 + 1] = r(); arr[j * 4 + 2] = 0.6 + r() * 0.8; arr[j * 4 + 3] = 0.6 + r() * 0.8; }
       out.push(arr);
@@ -535,8 +535,8 @@
       var cx = z[0] + z[2] / 2, cy = z[1] + z[3] / 2;
       ctx.save();
       ctx.beginPath(); ctx.rect(wx(z[0]), wy(z[1]), z[2] * F.s, z[3] * F.s); ctx.clip();
-      ctx.fillStyle = 'rgba(91,107,133,0.07)'; ctx.fillRect(wx(z[0]), wy(z[1]), z[2] * F.s, z[3] * F.s);
-      ctx.strokeStyle = 'rgba(91,107,133,0.55)';
+      ctx.fillStyle = 'rgba(91,107,133,0.09)'; ctx.fillRect(wx(z[0]), wy(z[1]), z[2] * F.s, z[3] * F.s);
+      ctx.strokeStyle = 'rgb(70,84,108)';
       for (var j = 0; j < n; j++) {
         var u = arr[j * 4] + now * 0.32 * arr[j * 4 + 2] * fl / 1200;
         u -= Math.floor(u);
@@ -544,11 +544,17 @@
         var px = cx + dx * (u - 0.5) * (along + 80) + (-dy) * (v - 0.5) * across;
         var py = cy + dy * (u - 0.5) * (along + 80) + dx * (v - 0.5) * across;
         var wob = Math.sin(now * 2 + j) * 6;
-        ctx.globalAlpha = Math.sin(u * Math.PI) * 0.8;
-        ctx.lineWidth = Math.max(1, 2.2 * F.s);
+        ctx.globalAlpha = Math.sin(u * Math.PI) * 0.75;
+        ctx.lineWidth = Math.max(1.3, 3 * F.s);
         ctx.beginPath();
         ctx.moveTo(wx(px - dx * len), wy(py - dy * len));
         ctx.quadraticCurveTo(wx(px - dx * len * 0.5 - dy * wob), wy(py - dy * len * 0.5 + dx * wob), wx(px), wy(py));
+        if (j % 3 === 0) {
+          var hl = 9;
+          ctx.moveTo(wx(px - dx * hl - dy * hl * 0.6), wy(py - dy * hl + dx * hl * 0.6));
+          ctx.lineTo(wx(px), wy(py));
+          ctx.lineTo(wx(px - dx * hl + dy * hl * 0.6), wy(py - dy * hl - dx * hl * 0.6));
+        }
         ctx.stroke();
       }
       ctx.globalAlpha = 1;
@@ -630,7 +636,7 @@
     ctx.save();
     ctx.beginPath(); ctx.rect(F.x, F.y, F.w, F.h); ctx.clip();
     drawWind();
-    if (G.hint) drawGhost(1, 0.2 + 0.06 * Math.sin(now * 3));
+    if (G.hint) drawGhost(1, 0.3 + 0.08 * Math.sin(now * 3));
     tutorialGhost();
     drawStrokes();
     drawElements();
@@ -840,14 +846,14 @@
     var tx = land ? W * 0.36 - ts / 2 : W / 2 - ts / 2, ty = land ? H / 2 - ts / 2 - 10 : H * 0.36 - ts / 2;
     ctx.drawImage(titleCanvas.c, tx, ty, ts, ts);
     // a marble rolling inside the ensō
-    var cx = tx + ts / 2, cy = ty + ts / 2, rad = ts * 0.3;
-    var ang = Math.PI / 2 + Math.sin(now * 1.3) * 0.75;
-    var mr = ts * 0.045, sp = titleSprite(mr);
-    A.drawMarble(ctx, sp, cx + Math.cos(ang) * rad, cy + Math.sin(ang) * rad, -Math.sin(now * 1.3) * 0.75 * rad / mr, 1);
-    var bx, by, bw = Math.min(260, W * 0.62), bh = 58;
-    if (land) { bx = W * 0.68 - bw / 2; by = H / 2 - 20; }
+    var cx = tx + ts / 2, cy = ty + ts / 2, rad = ts * 0.33;
+    var ang = Math.PI / 2 + Math.sin(now * 1.1) * 0.55;
+    var mr = ts * 0.04, sp = titleSprite(mr);
+    A.drawMarble(ctx, sp, cx + Math.cos(ang) * rad, cy + Math.sin(ang) * rad, -Math.sin(now * 1.1) * 0.55 * rad / mr, 1);
+    var bx, by, bw = Math.min(land ? 300 : 260, W * 0.62), bh = land ? 64 : 58;
+    if (land) { bx = Math.min(W * 0.72, tx + ts + 40 + bw / 2) - bw / 2; by = H / 2 - 30; }
     else { bx = W / 2 - bw / 2; by = ty + ts + Math.min(70, H * 0.08); }
-    text(t('tagline'), bx + bw / 2, by - 34, Math.min(20, W * 0.05), PAL.inkSoft, 'center', 600, W - 40);
+    text(t('tagline'), bx + bw / 2, by - 36, Math.min(land ? 24 : 20, W * 0.05), PAL.inkSoft, 'center', 600, land ? bw + 80 : W - 40);
     button('play', bx, by, bw, bh, { label: t('play'), icon: 'play', primary: true, act: onPlay, size: 22 });
     var sy = by + bh + 20, s = 52;
     button('tSound', bx + bw / 2 - s - 8, sy, s, s, { icon: save.snd ? 'sound' : 'soundOff', round: true, act: toggleSound });
@@ -1080,7 +1086,8 @@
     button: function (id) { var b = uiById(id); return b ? { x: b.x + b.w / 2, y: b.y + b.h / 2 } : null; },
     solution: function (i) { return LEVELS[i].sol; },
     field: function () { return { x: F.x, y: F.y, s: F.s, w: F.w, h: F.h }; },
-    start: function (i) { startLevel(i); }
+    start: function (i) { startLevel(i); },
+    showHint: function () { if (G) G.hint = true; }
   };
 
   // 1) draw the title synchronously, 2) firstFrameReady, 3) load save + language, 4) gameReady.
