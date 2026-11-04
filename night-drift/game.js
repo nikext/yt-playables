@@ -671,9 +671,6 @@
     ctx.lineJoin = 'round'; ctx.lineCap = 'butt';
     // dark shoulder hides the grid next to the road, a faint violet spill sells the glow
     roadPath(0); ctx.strokeStyle = PAL.shoulder; ctx.lineWidth = 2 * (hw + 1.6); ctx.stroke();
-    ctx.globalCompositeOperation = 'lighter';
-    ctx.globalAlpha = 0.07; ctx.strokeStyle = PAL.violet; ctx.lineWidth = 2 * (hw + 2.6); ctx.stroke();
-    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
     ctx.strokeStyle = PAL.road; ctx.lineWidth = 2 * hw; ctx.stroke();
     ctx.globalAlpha = 0.35; ctx.strokeStyle = PAL.roadHi; ctx.lineWidth = hw * 1.1; ctx.stroke();
     // center dashes, phase anchored to the road distance so they do not jump
@@ -934,7 +931,7 @@
     drawParticles();
     screenT();
     // vignette + boost speed lines and chromatic edges (smooth fades, never flashing)
-    if (VIG) ctx.drawImage(VIG, 0, 0, W, H);
+    drawVignette();
     if (boostVis > 0.01) drawBoostFx();
   }
 
@@ -1070,7 +1067,7 @@
     var roomy = H * (1 - CAR_Y) > 190 * u;
     var y = roomy ? L.boost.y - 64 * u : H * CAR_Y - ZPX * 6.5;
     var fx = roomy ? W / 2 : W / 2 + Math.min(W * 0.24, 230 * u), fy = roomy ? y + 20 * u : H * CAR_Y + 30 * u;
-    var ty = roomy ? y - 48 * u : y;
+    var ty = roomy ? y - 64 * u : y;
     if (hintMode === 1) {
       var down = (time % 1.6) > 0.5;
       drawFinger(fx, fy, 56 * u, down);
@@ -1164,15 +1161,23 @@
   }
 
   // ---------------------------------------------------------------- title
-  var TBG = null, LOGO = null, VIG = null, SUN = null, CHROMA_L = null, CHROMA_R = null, GROUND = null, HAZE = null;
+  var VIG_T = null, VIG_B = null, VIG_L = null, VIG_R = null;
+  function drawVignette() {
+    var vt = H * 0.2, vs = W * 0.12;
+    ctx.fillStyle = VIG_T; ctx.fillRect(0, 0, W, vt);
+    ctx.fillStyle = VIG_B; ctx.fillRect(0, H - vt, W, vt);
+    ctx.fillStyle = VIG_L; ctx.fillRect(0, 0, vs, H);
+    ctx.fillStyle = VIG_R; ctx.fillRect(W - vs, 0, vs, H);
+  }
+  var TBG = null, LOGO = null, SUN = null, CHROMA_L = null, CHROMA_R = null, GROUND = null, HAZE = null;
 
   function buildStatic() {
-    // vignette
-    VIG = ART.mk(W * DPR / 2, H * DPR / 2);
-    var vg = VIG.getContext('2d'), vw = VIG.width, vh = VIG.height;
-    var gr = vg.createRadialGradient(vw / 2, vh * 0.55, Math.min(vw, vh) * 0.35, vw / 2, vh * 0.55, Math.max(vw, vh) * 0.75);
-    gr.addColorStop(0, 'rgba(12,9,32,0)'); gr.addColorStop(1, 'rgba(12,9,32,0.7)');
-    vg.fillStyle = gr; vg.fillRect(0, 0, vw, vh);
+    // vignette: four edge gradients (much cheaper than a full-screen blit)
+    var vt = H * 0.2, vs = W * 0.12;
+    VIG_T = ctx.createLinearGradient(0, 0, 0, vt); VIG_T.addColorStop(0, 'rgba(12,9,32,0.75)'); VIG_T.addColorStop(1, 'rgba(12,9,32,0)');
+    VIG_B = ctx.createLinearGradient(0, H, 0, H - vt); VIG_B.addColorStop(0, 'rgba(12,9,32,0.6)'); VIG_B.addColorStop(1, 'rgba(12,9,32,0)');
+    VIG_L = ctx.createLinearGradient(0, 0, vs, 0); VIG_L.addColorStop(0, 'rgba(12,9,32,0.5)'); VIG_L.addColorStop(1, 'rgba(12,9,32,0)');
+    VIG_R = ctx.createLinearGradient(W, 0, W - vs, 0); VIG_R.addColorStop(0, 'rgba(12,9,32,0.5)'); VIG_R.addColorStop(1, 'rgba(12,9,32,0)');
     CHROMA_L = ctx.createLinearGradient(0, 0, W * 0.09, 0);
     CHROMA_L.addColorStop(0, 'rgba(255,46,136,0.6)'); CHROMA_L.addColorStop(1, 'rgba(255,46,136,0)');
     CHROMA_R = ctx.createLinearGradient(W, 0, W * 0.91, 0);
