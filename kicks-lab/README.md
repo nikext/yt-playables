@@ -143,7 +143,7 @@ lo-fi beat), `game.js` (state, layout, input, screens and lifecycle).
   - `save()` is called at meaningful moments only: after each client, at the end of a
     day, after each shop purchase, at the start of the next day, on pin and unpin, on a
     new studio, and on the sound toggle.
-- **Save format** (JSON, about 400 characters with a full wall, far below 10 KiB):
+- **Save format** (JSON, under 500 characters even with a full wall, far below 10 KiB):
   `{v:1, cash, rep, day, cl: clients done today, dc/dr/ds: today's cash, rep and stamps,
   sh: 1 while waiting in the shop, ink/pat/stk/lace/sil: owned-content bitmasks, booth:
   0-2, win: 0/1, wall: [[design code, stamps] x up to 6], snd, tut, pairs, five}`.

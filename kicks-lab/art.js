@@ -346,8 +346,8 @@
       if (i < stars) { c.fillStyle = col; c.fill(); } else { c.lineWidth = r * 0.025; c.stroke(); }
       c.restore();
     }
-    // worn ink: knock out a few specks
-    c.globalCompositeOperation = 'destination-out';
+    // worn ink: a few paper-colored specks over the print
+    c.fillStyle = C.paper;
     var rg = KL.rng(stars * 31 + 7);
     for (i = 0; i < 26; i++) { KL.circle(c, (rg() * 2 - 1) * r, (rg() * 2 - 1) * r, r * (0.01 + rg() * 0.025)); c.fill(); }
     c.restore();
