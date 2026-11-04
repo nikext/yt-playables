@@ -44,7 +44,7 @@ and new cosmetic trails unlock as your best score climbs.
   row so that there is always a route with enough reaction time at the current speed.
   The visible distance ahead is the same on every screen shape.
 - **Retention:** five cosmetic trails (Glow, Bubbles, Sparkle, Ribbon, Comet), unlocked at
-  best scores of 0 / 600 / 2000 / 5000 / 10000 and chosen on the title screen. A new
+  best scores of 0 / 400 / 1200 / 2500 / 5000 and chosen on the title screen. A new
   unlock is equipped automatically and announced on the game-over card.
 - **Game over:** score count-up, best score, "New best!" ribbon with confetti and a fanfare,
   instant tap-to-retry, and a home button.

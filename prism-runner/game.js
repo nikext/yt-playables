@@ -27,7 +27,7 @@
   var ORB_D = [DK.pink, DK.mint, DK.sky];
   var RAINBOW = [C.pink, C.peach, C.butter, C.mint, C.sky, C.lavender];
   var FONT = 'ui-rounded, "SF Pro Rounded", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif';
-  var TRAIL_REQ = [0, 600, 2000, 5000, 10000];
+  var TRAIL_REQ = [0, 400, 1200, 2500, 5000];
   var VIS = 10;            // world units visible ahead of the orb
   var TRAIL_LEN = 3.2;     // world units of trail behind the orb
   var EMPTY = -2, BLOCK = -1;
