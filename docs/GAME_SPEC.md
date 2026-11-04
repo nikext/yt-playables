@@ -1,7 +1,8 @@
-# Shared spec for all three games
+# Shared spec for all games
 
-Every game in this repo follows these rules, so the three of them pass YouTube Playables
-certification (see `REQUIREMENTS.md`) and feel like one family.
+Every game in this repo follows these rules so that it passes YouTube Playables
+certification (see `REQUIREMENTS.md`). Everything here applies to every game except the
+visual style, which is set per batch (see below).
 
 ## Layout
 
@@ -13,7 +14,7 @@ certification (see `REQUIREMENTS.md`) and feel like one family.
   README.md    # the pitch, controls, how it meets the requirements (not part of the bundle)
 ```
 
-`index.html` skeleton:
+`index.html` skeleton (set the `background` to the game's own bg color):
 
 ```html
 <!doctype html>
@@ -44,7 +45,9 @@ certification (see `REQUIREMENTS.md`) and feel like one family.
   licensing.
 - Font stack: `ui-rounded, "SF Pro Rounded", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif`.
 
-## Visual style: soft pastel flat
+## Visual style
+
+### Batch 1 (Prism Runner, Lantern Links, Island Ferry): soft pastel flat
 
 | Token | Hex | Use |
 |---|---|---|
@@ -64,6 +67,26 @@ certification (see `REQUIREMENTS.md`) and feel like one family.
 - The tone is calm and charming but aimed at **13+**. Avoid babyish characters or "for kids"
   framing.
 - Do not draw high-contrast black-and-white square grids (no QR-like visuals).
+
+### Batch 2 (Ink Path, Night Drift, Kicks Lab): one art direction per game
+
+Each game in batch 2 has its own look. The game's README defines its palette tokens, and
+`game.js`/`art.js` keeps them in one palette object. These rules apply to all of them:
+
+| Game | Direction | Core palette |
+|---|---|---|
+| Ink Path | sumi-e ink on rice paper | paper `#F3EBDD`, ink `#2B2622`, vermilion `#D9452B`, gold `#C9A24A` |
+| Night Drift | synthwave night | night `#140F2D`, magenta `#FF2E88`, cyan `#2EE6FF`, sun `#FF9E3D` |
+| Kicks Lab | streetwear risograph print | paper `#FFF4E2`, riso pink `#FF4F9A`, riso blue `#2F5BEA`, sunflower `#FFD23F`, ink `#26213A` |
+
+- Text and important UI must have strong contrast (aim for WCAG AA, ≥ 4.5:1 for small text).
+- **No flashing**: never alternate full-screen brightness more than 3 times per second.
+  Keep glow, bloom and screen shake subtle.
+- Keep the tone aimed at **13+**. No babyish characters or "for kids" framing.
+- Still no QR-like high-contrast square grids. Neon grid floors are fine because they are
+  in perspective, thin-lined and colored.
+- Avoid real brands, logos and trademarked designs (for example sneaker swooshes or
+  stripes), and real car models.
 
 ## Screen and input
 
