@@ -244,16 +244,16 @@
       g = arc(turn((30 + rng() * 40) * DEG), R, KIND_SWEEP);
       if (tok) arcTokens(g);
     } else if ((r -= wCorner) < 0) {
-      R = lerp(24, 12.5, d) * (0.9 + 0.35 * rng());
+      R = lerp(21, 12.5, d) * (0.9 + 0.3 * rng());
       g = arc(turn((55 + rng() * 55) * DEG), R, KIND_CORNER);
       if (tok) arcTokens(g);
     } else if ((r -= wS) < 0) {
-      R = lerp(22, 13, d) * (0.9 + 0.3 * rng());
+      R = lerp(20, 13, d) * (0.9 + 0.3 * rng());
       g = arc(turn((45 + rng() * 40) * DEG), R, KIND_S);
       if (tok) arcTokens(g);
       var mid = lerp(6, 0, d) * rng();
       if (mid > 0.8) addSeg(mid, 0, KIND_S);
-      var R2 = lerp(22, 13, d) * (0.9 + 0.3 * rng());
+      var R2 = lerp(20, 13, d) * (0.9 + 0.3 * rng());
       var g2 = arc(turn((45 + rng() * 45) * DEG, -g.dir), R2, KIND_S);
       if (tok) arcTokens(g2);
     } else if ((r -= wChic) < 0) {
@@ -287,11 +287,11 @@
     tutorial = !!tut; tutSeg = -1;
     addSeg(tut ? 70 : 55, 0, KIND_STRAIGHT);
     if (tut) {
-      var g = arc(85 * DEG, 26, KIND_TUT);
+      var g = arc(88 * DEG, 21, KIND_TUT);
       tutSeg = g.id;
       arcTokens(g);
       addSeg(34, 0, KIND_STRAIGHT);
-      arcTokens(arc(-80 * DEG, 23, KIND_TUT));
+      arcTokens(arc(-82 * DEG, 20, KIND_TUT));
       addSeg(32, 0, KIND_STRAIGHT);
     } else {
       lineTokens(segs[0], 4, 0);

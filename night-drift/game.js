@@ -36,7 +36,7 @@
   var COMBO_MAX = 10, TOKEN_PTS = 25;
   var V0 = 15, VADD = 13, TUT_V = 12.5;
   var TILT = 0.8;         // vertical squash of the ground plane (3/4 top-down look)
-  var CAR_Y = 0.7;        // car position on screen (fraction of height)
+  var CAR_Y = 0.7;        // car position on screen (fraction of height; set in layout)
   var COUNT_STEP = 0.5;
 
   // ---------------------------------------------------------------- utils
@@ -129,7 +129,10 @@
   var floatHead = 0;
   function floatText(str, col, sz) {
     var f = FLOATS[floatHead]; floatHead = (floatHead + 1) % FLOATS.length;
-    f.str = str; f.t = 0; f.life = 1.1; f.col = col; f.sz = sz || 1;
+    // stack above the texts that are still young so they never overlap
+    var row = 0;
+    for (var i = 0; i < FLOATS.length; i++) if (FLOATS[i] !== f && FLOATS[i].life > 0 && FLOATS[i].t < 0.6) row = Math.max(row, FLOATS[i].dy + 1);
+    f.str = str; f.t = 0; f.life = 1.1; f.col = col; f.sz = sz || 1; f.dy = Math.min(row, 3);
   }
 
   // speed lines for boost
@@ -270,7 +273,7 @@
     driftOn = false; driftPts = 0; driftT = 0;
     combo = 1;
     var protect = (tutorialOn && car.s < tutProtectS) || graceT > 0;
-    if (!protect) { hull -= crash ? 1 : 0.2 + 0.45 * sev; graceT = crash ? 1.3 : 0.5; }
+    if (!protect) { hull -= crash ? 1 : 0.28 + 0.5 * sev; graceT = crash ? 1.3 : 0.3; }
     var nx = -Math.sin(car.tang) * side, ny = Math.cos(car.tang) * side;
     sparks(car.x + nx * CAR_R, car.y + ny * CAR_R, -nx, -ny, crash ? 26 : 10, crash ? 9 : 6);
     shake = Math.max(shake, crash ? 0.45 : 0.15);
@@ -280,7 +283,7 @@
 
   function bankDrift() {
     driftOn = false;
-    if (driftT < 0.22 || driftPts < 4) { driftPts = 0; return; }
+    if (driftT < 0.2 || driftPts < 4) { driftPts = 0; return; }
     var pts = Math.round(driftPts) * combo;
     score += pts;
     if (boostT <= 0) boost = Math.min(1, boost + driftPts / BOOST_PTS);
@@ -302,6 +305,7 @@
     k.taken = true; k.tt = 0;
     tokensRun++;
     score += TOKEN_PTS * combo;
+    if (boostT <= 0) boost = Math.min(1, boost + 0.025);
     tokenChain = tokenChainT > 0 ? tokenChain + 1 : 0; tokenChainT = 1.3;
     glints(k.x, k.y, 10, 3, 7);
     AU.token(tokenChain);
@@ -383,7 +387,7 @@
       }
       if (car.alive) {
         car.v -= car.v * 0.6 * dt;
-        if (!(tutorialOn && car.s < tutProtectS) && graceT <= 0) { hull -= 0.3 * dt; if (hull <= 0) { hull = 0; die(sd); } }
+        if (!(tutorialOn && car.s < tutProtectS) && graceT <= 0) { hull -= 0.4 * dt; if (hull <= 0) { hull = 0; die(sd); } }
         if (Math.random() < 0.45) sparks(car.x + nx * CAR_R, car.y + ny * CAR_R, -nx, -ny, 1, 5);
       }
     }
@@ -393,7 +397,7 @@
     var slipS = wrap(car.h - car.va), slip = Math.abs(slipS);
     if (hold && !driftOn) { driftOn = true; driftPts = 0; driftT = 0; }
     if (driftOn) {
-      if (slip > 0.1) { driftPts += car.v * slip * 5 * dt * (boostT > 0 ? 2 : 1); driftT += dt; }
+      if (slip > 0.06) { driftPts += car.v * slip * 5 * dt * (boostT > 0 ? 2 : 1); driftT += dt; }
       if (!hold && slip < 0.08) bankDrift();
     }
 
@@ -844,7 +848,12 @@
     var ch = Math.cos(car.h), sh = Math.sin(car.h);
     var hx = lerp(car.px, car.x, al) - ch * 1.4, hy = lerp(car.py, car.y, al) - sh * 1.4;
     ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'butt'; ctx.lineJoin = 'round';
-    var CH = 8, per = Math.ceil(trCount / CH);
+    var CH = 8, per = Math.ceil(trCount / CH), n0 = Math.min(trCount, per * 5);
+    // one continuous soft glow under the whole trail, then the tapered core in chunks
+    ctx.beginPath(); ctx.moveTo(hx, hy);
+    for (var g = 0; g < n0; g++) { var gi = (trHead - 1 - g + TRN * 2) % TRN; ctx.lineTo(TRX[gi], TRY[gi]); }
+    ctx.lineCap = 'round'; ctx.strokeStyle = trailColor(0); ctx.globalAlpha = 0.13 + boostVis * 0.08; ctx.lineWidth = 1.3 + boostVis * 0.6; ctx.stroke();
+    ctx.lineCap = 'butt';
     for (var c = 0; c < CH; c++) {
       var i0 = c * per, i1 = Math.min(trCount - 1, i0 + per);
       if (i0 >= trCount - 1) break;
@@ -858,7 +867,6 @@
       var f = c / CH, b = TRB[(trHead - 1 - i0 + TRN * 2) % TRN];
       var w = lerp(0.5, 0.06, f) * (1 + b * 0.8);
       ctx.strokeStyle = trailColor(c);
-      ctx.globalAlpha = (1 - f) * 0.16; ctx.lineWidth = w * 4; ctx.stroke();
       ctx.globalAlpha = (1 - f) * 0.85; ctx.lineWidth = w; ctx.stroke();
     }
     ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.lineCap = 'butt'; ctx.lineJoin = 'miter';
@@ -1035,7 +1043,7 @@
     for (var i = 0; i < FLOATS.length; i++) {
       var f = FLOATS[i];
       if (f.life <= 0) continue;
-      var k = f.t / f.life, y = SY - ZPX * 4.2 - 46 * u * easeOut(k) - i * 0;
+      var k = f.t / f.life, y = SY - ZPX * 4.2 - 46 * u * easeOut(k) - f.dy * 30 * u;
       ctx.globalAlpha = clamp((1 - k) * 2, 0, 1);
       var sz = 22 * u * f.sz * (0.8 + 0.2 * easeOutBack(Math.min(1, k * 4)));
       glowLabel(f.str, SX, y, sz, f.col, PAL.night, 'center', 900, W * 0.8, true);
@@ -1058,16 +1066,20 @@
 
   function drawHint() {
     if (!tutorialOn || !car.alive || pauseMode) return;
-    var y = L.boost.y - 64 * u;
+    // below the car when there is room (portrait), otherwise text above it and the hand to the side
+    var roomy = H * (1 - CAR_Y) > 190 * u;
+    var y = roomy ? L.boost.y - 64 * u : H * CAR_Y - ZPX * 6.5;
+    var fx = roomy ? W / 2 : W / 2 + Math.min(W * 0.24, 230 * u), fy = roomy ? y + 20 * u : H * CAR_Y + 30 * u;
+    var ty = roomy ? y - 48 * u : y;
     if (hintMode === 1) {
       var down = (time % 1.6) > 0.5;
-      drawFinger(W / 2, y + 20 * u, 56 * u, down);
-      glowLabel(lastInput === 'key' ? tr('holdKey') : tr('holdDrift'), W / 2, y - 48 * u, 24 * u, PAL.ink, PAL.magenta, 'center', 900, W - 40 * u, true);
+      drawFinger(fx, fy, 56 * u, down);
+      glowLabel(lastInput === 'key' ? tr('holdKey') : tr('holdDrift'), W / 2, ty, 24 * u, PAL.ink, PAL.magenta, 'center', 900, W - 40 * u, true);
     } else if (hintMode === 2) {
-      glowLabel(tr('release'), W / 2, y - 20 * u, 22 * u, PAL.cyan, PAL.night, 'center', 900, W - 40 * u, true);
+      glowLabel(tr('release'), W / 2, roomy ? y - 20 * u : y, 22 * u, PAL.cyan, PAL.night, 'center', 900, W - 40 * u, true);
     } else if (runT < 4 && bendDist > 7) {
       ctx.globalAlpha = clamp(4 - runT, 0, 1);
-      glowLabel(lastInput === 'key' ? tr('holdKey') : tr('holdDrift'), W / 2, y - 20 * u, 20 * u, PAL.inkSoft, PAL.night, 'center', 800, W - 40 * u, true);
+      glowLabel(lastInput === 'key' ? tr('holdKey') : tr('holdDrift'), W / 2, roomy ? y - 20 * u : y, 20 * u, PAL.inkSoft, PAL.night, 'center', 800, W - 40 * u, true);
       ctx.globalAlpha = 1;
     }
   }
@@ -1084,7 +1096,7 @@
     panel(L.pPanel);
     var p = L.pPanel;
     glowLabel(tr('paused').toUpperCase(), W / 2, p.y + 40 * u, 32 * u, PAL.ink, PAL.magenta, 'center', 900, p.w - 40 * u, true);
-    ctx.globalAlpha = 0.65 + 0.35 * Math.sin(time * 3);
+    ctx.globalAlpha = 0.85 + 0.15 * Math.sin(time * 3);
     label(tr('tapContinue'), W / 2, p.y + 76 * u, 16 * u, PAL.cyan, 'center', 800, p.w - 40 * u);
     ctx.globalAlpha = 1;
     drawBtn(L.pResume, 'primary', 'resume');
@@ -1096,6 +1108,7 @@
     roundBtn(L.pSound, 'psound', 'sound', save.snd);
     label(tr('restart'), L.pRestart.x + L.pRestart.w / 2, L.pRestart.y + L.pRestart.h + 14 * u, 12 * u, PAL.inkSoft, 'center', 700, L.pRestart.w * 1.5);
     label(tr('menu'), L.pMenu.x + L.pMenu.w / 2, L.pMenu.y + L.pMenu.h + 14 * u, 12 * u, PAL.inkSoft, 'center', 700, L.pMenu.w * 1.5);
+    label(tr('sound'), L.pSound.x + L.pSound.w / 2, L.pSound.y + L.pSound.h + 14 * u, 12 * u, PAL.inkSoft, 'center', 700, L.pSound.w * 1.5);
   }
 
   function drawCount() {
@@ -1503,6 +1516,7 @@
     L.l = SA.l + m; L.r = W - SA.r - m; L.t = SA.t + m; L.b = H - SA.b - m;
     portrait = H >= W;
     // world zoom: enough road ahead in both orientations
+    CAR_Y = portrait ? 0.7 : 0.73;
     baseZ = Math.min(W / 23, H / (44 * TILT));
     // HUD
     var pb = Math.max(46, 46 * u);
@@ -1540,7 +1554,7 @@
     L.tSound = rect(L.r - rb, L.b - rb, rb, rb);
 
     // pause
-    var pw2 = Math.min(W - 2 * m, 340 * u), ph2 = 300 * u;
+    var pw2 = Math.min(W - 2 * m, 340 * u), ph2 = 282 * u;
     L.pPanel = rect(W / 2 - pw2 / 2, H / 2 - ph2 / 2, pw2, ph2);
     var pp = L.pPanel;
     L.pResume = rect(pp.x + 28 * u, pp.y + 104 * u, pp.w - 56 * u, 60 * u);

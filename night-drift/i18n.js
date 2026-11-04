@@ -6,7 +6,7 @@
   'use strict';
   window.ND_I18N = {
     en: {
-      play: 'Drive', best: 'Best', garage: 'Garage', paint: 'Paint', trail: 'Trail',
+      play: 'Drive', sound: 'Sound', best: 'Best', garage: 'Garage', paint: 'Paint', trail: 'Trail',
       unlock: 'Unlock', equipped: 'Equipped', equip: 'Equip', reach: 'Best', paused: 'Paused',
       tapContinue: 'Tap to continue', resume: 'Resume', restart: 'Restart', menu: 'Menu',
       gameOver: 'Wrecked', newBest: 'New best!', score: 'Score', tokens: 'Tokens',
@@ -17,7 +17,7 @@
       trails: ['Magenta', 'Cyan', 'Ember', 'Ghost', 'Spectrum']
     },
     es: {
-      play: 'Conducir', best: 'Récord', garage: 'Garaje', paint: 'Pintura', trail: 'Estela',
+      play: 'Conducir', sound: 'Sonido', best: 'Récord', garage: 'Garaje', paint: 'Pintura', trail: 'Estela',
       unlock: 'Desbloquear', equipped: 'Equipado', equip: 'Equipar', reach: 'Récord', paused: 'Pausa',
       tapContinue: 'Toca para continuar', resume: 'Seguir', restart: 'Reiniciar', menu: 'Menú',
       gameOver: 'Destrozado', newBest: '¡Nuevo récord!', score: 'Puntos', tokens: 'Fichas',
@@ -28,7 +28,7 @@
       trails: ['Magenta', 'Cian', 'Brasa', 'Fantasma', 'Espectro']
     },
     pt: {
-      play: 'Dirigir', best: 'Recorde', garage: 'Garagem', paint: 'Pintura', trail: 'Rastro',
+      play: 'Dirigir', sound: 'Som', best: 'Recorde', garage: 'Garagem', paint: 'Pintura', trail: 'Rastro',
       unlock: 'Desbloquear', equipped: 'Equipado', equip: 'Equipar', reach: 'Recorde', paused: 'Pausado',
       tapContinue: 'Toque para continuar', resume: 'Continuar', restart: 'Reiniciar', menu: 'Menu',
       gameOver: 'Destruído', newBest: 'Novo recorde!', score: 'Pontos', tokens: 'Fichas',
@@ -39,7 +39,7 @@
       trails: ['Magenta', 'Ciano', 'Brasa', 'Fantasma', 'Espectro']
     },
     fr: {
-      play: 'Rouler', best: 'Record', garage: 'Garage', paint: 'Peinture', trail: 'Traînée',
+      play: 'Rouler', sound: 'Son', best: 'Record', garage: 'Garage', paint: 'Peinture', trail: 'Traînée',
       unlock: 'Débloquer', equipped: 'Équipé', equip: 'Équiper', reach: 'Record', paused: 'Pause',
       tapContinue: 'Touchez pour continuer', resume: 'Reprendre', restart: 'Recommencer', menu: 'Menu',
       gameOver: 'Épave', newBest: 'Nouveau record !', score: 'Score', tokens: 'Jetons',
@@ -50,7 +50,7 @@
       trails: ['Magenta', 'Cyan', 'Braise', 'Fantôme', 'Spectre']
     },
     de: {
-      play: 'Fahren', best: 'Rekord', garage: 'Garage', paint: 'Lack', trail: 'Spur',
+      play: 'Fahren', sound: 'Ton', best: 'Rekord', garage: 'Garage', paint: 'Lack', trail: 'Spur',
       unlock: 'Freischalten', equipped: 'Aktiv', equip: 'Wählen', reach: 'Rekord', paused: 'Pause',
       tapContinue: 'Tippen zum Fortsetzen', resume: 'Weiter', restart: 'Neustart', menu: 'Menü',
       gameOver: 'Schrott', newBest: 'Neuer Rekord!', score: 'Punkte', tokens: 'Chips',
