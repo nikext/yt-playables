@@ -70,24 +70,19 @@
 
     // tray: tool row, option row, swatches; pick the biggest cell that fits
     function trayFit(tw, maxH) {
-      var best = null;
-      for (var cell = 58; cell >= 38; cell -= 2) {
-        var cols = Math.max(1, Math.min(inks, Math.floor(tw / cell)));
-        var cw = Math.min(cell + 6, tw / cols), rows = Math.ceil(inks / cols);
-        var rowH = clamp(cell + 4, 46, 58);
-        var h = 10 + rowH + 8 + rowH + 10 + rows * cw + 10;
-        best = { cols: cols, cw: cw, rows: rows, rowH: rowH, h: h };
-        if (h <= maxH) break;
-      }
-      return best;
+      var maxCols = Math.max(1, Math.floor(tw / 44)), rows = Math.ceil(inks / maxCols), cols = Math.ceil(inks / rows);
+      var cw = Math.min(58, tw / cols), pd = 10, rowH = clamp(Math.min(cw + 6, (maxH - 38 - rows * cw) / 2), 46, 58);
+      var h = pd + rowH + 8 + rowH + pd + rows * cw + pd;
+      if (h > maxH) { pd = 5; rowH = 44; cw = Math.min(cw, (maxH - 4 * pd - 2 * rowH - 4) / rows); h = pd + rowH + 4 + rowH + pd + rows * cw + pd; }
+      return { cols: cols, cw: cw, rows: rows, rowH: rowH, h: h, pd: pd };
     }
     var tf;
     if (!L.land) {
       var cw0 = clamp(U * 0.26, 88, 150), oh = clamp(H * 0.15, 104, 150);
       setR(L.client, p, top, cw0, oh);
       setR(L.order, p + cw0 + 8, top, W - 2 * p - cw0 - 8, oh);
-      tf = trayFit(W - 2 * p - 16, H * 0.4);
-      setR(L.tray, p, H - p - tf.h, W - 2 * p, tf.h);
+      tf = trayFit(W - 2 * p + 8 - 8, H * 0.4);
+      setR(L.tray, p - 4, H - p - tf.h, W - 2 * p + 8, tf.h);
       var sy = top + oh + 10;
       setR(L.shoe, p, sy, W - 2 * p, L.tray.y - 10 - sy);
     } else {
@@ -101,14 +96,14 @@
       setR(L.shoe, p + lw + 12, top, W - 2 * p - lw - rw - 24, H - top - p);
     }
     // inside the tray
-    var tx = L.tray.x + 8, tw = L.tray.w - 16, y = L.tray.y + 10, tb = (tw - 4 * 6) / 5;
+    var tpad = L.land ? 8 : 4, tx = L.tray.x + tpad, tw = L.tray.w - 2 * tpad, y = L.tray.y + tf.pd, tb = (tw - 4 * 6) / 5;
     for (i = 0; i < 5; i++) setR(L.tools[i], tx + i * (tb + 6), y, tb, tf.rowH);
-    y += tf.rowH + 8;
+    y += tf.rowH + (tf.pd < 10 ? 4 : 8);
     setR(L.chipRow, tx, y, tw, tf.rowH);
     var cb = Math.min(tf.rowH + 6, (tw - 5 * 6) / 6);
     for (i = 0; i < 6; i++) setR(L.chips[i], tx + i * (cb + 6), y, cb, tf.rowH);
     L.chipW = cb;
-    y += tf.rowH + 10;
+    y += tf.rowH + tf.pd;
     var gw = tf.cols * tf.cw, gx = tx + (tw - gw) / 2;
     for (i = 0; i < KL.INKS.length; i++) setR(L.sw[i], 0, 0, 0, 0);
     var own = U_().ink;
@@ -384,7 +379,7 @@
   function startStudio() {
     scene = 'studio'; menuOpen = false;
     AU.music(false);
-    if (save.sh) { openShop(); return; }
+    if (save.sh) { PlayablesSDK.sendScore(save.rep); openShop(); return; }
     newClient();
   }
   function endDay() {
@@ -867,6 +862,17 @@
       default: return t('r_' + q.t);
     }
   }
+  function reqShort(q) {
+    switch (q.t) {
+      case 'zone': return t('q_zone', undefined, undefined, t('zn' + q.z));
+      case 'vibe': return t('q_vibe', undefined, undefined, t('v' + q.v));
+      case 'pat': return t('q_pat', undefined, undefined, t('p' + q.p));
+      case 'stk': return t('q_stk', undefined, undefined, t('s' + q.k));
+      case 'lace': return t('q_lace', undefined, undefined, t('l' + q.l));
+      case 'sil': return t('q_sil', undefined, undefined, t('k' + q.s));
+      default: return t('q_' + q.t);
+    }
+  }
   function badge(x, y, r, ok) {
     ctx.fillStyle = C.ink; KL.circle(ctx, x + 2, y + 2, r); ctx.fill();
     ctx.fillStyle = ok ? C.good : C.bad; KL.circle(ctx, x, y, r); ctx.fill();
@@ -951,7 +957,7 @@
         s = rr.h;
         chipBox(rr, tip.i === i && tip.t > 0 ? C.paper : C.paperDeep, false, 2);
         reqIcon(q, rr.x + s / 2 + 2, rr.y + s / 2, s - 6, S.design.s);
-        wrap(reqText(q), rr.x + s + 6, rr.y + rr.h / 2, rr.w - s - 40, clamp(s * 0.24, 12, 16), C.ink, 2);
+        wrap(reqShort(q), rr.x + s + 6, rr.y + rr.h / 2, rr.w - s - 40, clamp(s * 0.24, 12, 16), C.ink, 2);
         if (ok) badge(rr.x + rr.w - 18, rr.y + rr.h / 2, 11, true);
         else { ctx.lineWidth = 2.5; ctx.strokeStyle = 'rgba(38,33,58,0.35)'; KL.circle(ctx, rr.x + rr.w - 18, rr.y + rr.h / 2, 10); ctx.stroke(); }
       }
@@ -977,9 +983,9 @@
     for (i = 0; i < 5; i++) {
       var tr = L.tools[i], on = sel.tool === i;
       chipBox(tr, on ? C.sun : C.paper, on);
-      var big = tr.h >= 54 && tr.w >= 56;
-      KL.icon(ctx, tools[i], tr.x + tr.w / 2, tr.y + (on ? -2 : 0) + tr.h / 2 - (big ? 7 : 0), Math.min(tr.w, tr.h) * (big ? 0.5 : 0.62), C.ink);
-      if (big) KL.text(ctx, t('t' + i), tr.x + tr.w / 2, tr.y + (on ? -2 : 0) + tr.h - 11, 11, C.ink, null, 'center', tr.w - 6, '900');
+      var big = tr.h >= 48 && tr.w >= 56;
+      KL.icon(ctx, tools[i], tr.x + tr.w / 2, tr.y + (on ? -2 : 0) + tr.h / 2 - (big ? 7 : 0), Math.min(tr.w, tr.h) * (big ? 0.46 : 0.62), C.ink);
+      if (big) KL.text(ctx, t('t' + i), tr.x + tr.w / 2, tr.y + (on ? -2 : 0) + tr.h - 10, 10.5, C.ink, null, 'center', tr.w - 6, '900');
     }
     // option row
     var col = KL.INKS[sel.color], acc = sel.color === 0 ? C.pink : col;
@@ -1266,6 +1272,7 @@
     var prog = hasProgress();
     button(L.tPrimary, prog ? t('cont', save.day) : t('play'), C.pink, C.white, 'play');
     if (prog) button(L.tSecondary, titleSure > 0 ? t('sure') : t('fresh'), titleSure > 0 ? C.sun : C.white, C.ink);
+    if (!prog) howTo(cx, L.tPrimary.y + L.tPrimary.h + 30);
     if (prog) {
       var sy = L.tSecondary.y + L.tSecondary.h + 28;
       if (sy < H - 16) {
@@ -1275,6 +1282,24 @@
     }
     iconBtn(L.tSound, save.snd && ytAudio ? 'sound' : 'mute');
     if (save.wall.length) iconBtn(L.tWall, 'wall');
+  }
+
+  // Three-step strip for new players: order -> paint -> hype.
+  function howTo(cx, y) {
+    var s = 54, gap = 34, x0 = cx - (3 * s + 2 * gap) / 2;
+    if (y + s + 10 > H) return;
+    for (var i = 0; i < 3; i++) {
+      var r = { x: x0 + i * (s + gap), y: y, w: s, h: s }, mx = r.x + s / 2, my = r.y + s / 2;
+      ctx.save(); ctx.translate(mx, my); ctx.rotate([-0.08, 0.05, -0.04][i]); ctx.translate(-mx, -my);
+      KL.panel(ctx, r.x, r.y, s, s, 14, C.white, [C.pink, C.blue, C.sun][i], 4, 3);
+      if (i === 0) {
+        ctx.fillStyle = C.pink; KL.rr(ctx, r.x + 10, r.y + 10, s - 20, 8, 3); ctx.fill();
+        swatchDot(r.x + 19, r.y + 33, 7, C.pink, false); swatchDot(r.x + 37, r.y + 33, 7, C.blue, false);
+      } else if (i === 1) KL.icon(ctx, 'spray', mx, my, s * 0.66, C.ink);
+      else KL.icon(ctx, 'flame', mx, my, s * 0.66, C.ink);
+      ctx.restore();
+      if (i < 2) KL.icon(ctx, 'arrow', r.x + s + gap / 2, my, 22, C.ink);
+    }
   }
 
   // ---------- shop ----------

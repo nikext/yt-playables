@@ -28,7 +28,9 @@
       wall: 'Studio wall', wallEmpty: 'Pin your best pairs from the result screen.', back: 'Back',
       tier: 'Rep tier {n}! Tougher orders, bigger pay.', rep: 'Rep', kicks: 'Pairs', tipLook: 'Tap an order icon to see what it means',
       wallFull: 'Wall full: replaced the oldest pin', earned: 'Today', clientN: 'Client {n}/{m}', avg: 'Avg hype',
-      max3: 'Max 3 stickers. Drag one off to remove it.'
+      max3: 'Max 3 stickers. Drag one off to remove it.',
+      q_color: 'Use this ink', q_ban: 'Avoid this ink', q_zone: '{x}: this ink', q_vibe: '{x} vibe', q_pat: 'Pattern: {x}', q_stk: 'Sticker: {x}', q_mood: 'Match the mood', q_lace: 'Laces: {x}', q_sil: 'Shoe: {x}', q_keep: 'Keep the rest',
+      zn0: 'Upper', zn1: 'Side panel', zn2: 'Toe cap', zn3: 'Heel', zn4: 'Collar', zn5: 'Laces', zn6: 'Midsole', zn7: 'Sole'
     },
     es: {
       tag: 'Taller de zapatillas custom', play: 'Abrir el taller', cont: 'Continuar · Día {n}', fresh: 'Nuevo taller', sure: 'Toca otra vez para empezar de cero',
@@ -54,7 +56,9 @@
       wall: 'Muro del taller', wallEmpty: 'Fija tus mejores pares desde el resultado.', back: 'Volver',
       tier: '¡Nivel {n}! Pedidos más difíciles, mejor paga.', rep: 'Rep', kicks: 'Pares', tipLook: 'Toca un icono del pedido para ver qué significa',
       wallFull: 'Muro lleno: se quitó el más antiguo', earned: 'Hoy', clientN: 'Cliente {n}/{m}', avg: 'Hype medio',
-      max3: 'Máximo 3 pegatinas. Arrastra una fuera para quitarla.'
+      max3: 'Máximo 3 pegatinas. Arrastra una fuera para quitarla.',
+      q_color: 'Usa esta tinta', q_ban: 'Evita esta tinta', q_zone: '{x}: esta tinta', q_vibe: 'Estilo {x}', q_pat: 'Patrón: {x}', q_stk: 'Pegatina: {x}', q_mood: 'Sigue el moodboard', q_lace: 'Cordones: {x}', q_sil: 'Modelo: {x}', q_keep: 'Deja el resto',
+      zn0: 'Empeine', zn1: 'Panel lateral', zn2: 'Puntera', zn3: 'Talón', zn4: 'Cuello', zn5: 'Cordones', zn6: 'Mediasuela', zn7: 'Suela'
     },
     pt: {
       tag: 'Estúdio de tênis custom', play: 'Abrir o estúdio', cont: 'Continuar · Dia {n}', fresh: 'Novo estúdio', sure: 'Toque de novo para recomeçar',
@@ -80,7 +84,9 @@
       wall: 'Mural do estúdio', wallEmpty: 'Fixe seus melhores pares na tela de resultado.', back: 'Voltar',
       tier: 'Nível {n}! Pedidos mais difíceis, pagamento maior.', rep: 'Rep', kicks: 'Pares', tipLook: 'Toque num ícone do pedido para ver o que significa',
       wallFull: 'Mural cheio: o mais antigo saiu', earned: 'Hoje', clientN: 'Cliente {n}/{m}', avg: 'Hype médio',
-      max3: 'Máximo 3 adesivos. Arraste um para fora para tirar.'
+      max3: 'Máximo 3 adesivos. Arraste um para fora para tirar.',
+      q_color: 'Use esta tinta', q_ban: 'Evite esta tinta', q_zone: '{x}: esta tinta', q_vibe: 'Estilo {x}', q_pat: 'Padrão: {x}', q_stk: 'Adesivo: {x}', q_mood: 'Siga o moodboard', q_lace: 'Cadarço: {x}', q_sil: 'Modelo: {x}', q_keep: 'Mantenha o resto',
+      zn0: 'Cabedal', zn1: 'Painel lateral', zn2: 'Biqueira', zn3: 'Calcanhar', zn4: 'Gola', zn5: 'Cadarços', zn6: 'Entressola', zn7: 'Sola'
     },
     fr: {
       tag: 'Atelier de sneakers custom', play: "Ouvrir l'atelier", cont: 'Continuer · Jour {n}', fresh: 'Nouvel atelier', sure: 'Touchez encore pour tout recommencer',
@@ -106,7 +112,9 @@
       wall: "Mur de l'atelier", wallEmpty: 'Épinglez vos meilleures paires depuis le résultat.', back: 'Retour',
       tier: 'Palier {n} ! Commandes plus dures, meilleure paie.', rep: 'Rép', kicks: 'Paires', tipLook: "Touchez une icône de la commande pour l'expliquer",
       wallFull: 'Mur plein : la plus ancienne est retirée', earned: "Aujourd'hui", clientN: 'Client {n}/{m}', avg: 'Hype moyen',
-      max3: 'Max 3 stickers. Glissez-en un dehors pour le retirer.'
+      max3: 'Max 3 stickers. Glissez-en un dehors pour le retirer.',
+      q_color: 'Utilisez cette encre', q_ban: 'Évitez cette encre', q_zone: '{x} : cette encre', q_vibe: 'Style {x}', q_pat: 'Motif : {x}', q_stk: 'Sticker : {x}', q_mood: 'Suivez le moodboard', q_lace: 'Lacets : {x}', q_sil: 'Modèle : {x}', q_keep: 'Gardez le reste',
+      zn0: 'Empeigne', zn1: 'Panneau latéral', zn2: 'Bout', zn3: 'Talon', zn4: 'Col', zn5: 'Lacets', zn6: 'Semelle inter.', zn7: 'Semelle'
     },
     de: {
       tag: 'Custom-Sneaker-Studio', play: 'Studio öffnen', cont: 'Weiter · Tag {n}', fresh: 'Neues Studio', sure: 'Nochmal tippen zum Neustart',
@@ -132,7 +140,9 @@
       wall: 'Studiowand', wallEmpty: 'Pinne deine besten Paare im Ergebnis.', back: 'Zurück',
       tier: 'Stufe {n}! Härtere Aufträge, mehr Geld.', rep: 'Ruf', kicks: 'Paare', tipLook: 'Tippe auf ein Auftragssymbol für Infos',
       wallFull: 'Wand voll: der älteste Pin ist weg', earned: 'Heute', clientN: 'Kunde {n}/{m}', avg: 'Ø Hype',
-      max3: 'Max. 3 Sticker. Zieh einen weg, um ihn zu entfernen.'
+      max3: 'Max. 3 Sticker. Zieh einen weg, um ihn zu entfernen.',
+      q_color: 'Nutze diese Farbe', q_ban: 'Meide diese Farbe', q_zone: '{x}: diese Farbe', q_vibe: '{x}-Stil', q_pat: 'Muster: {x}', q_stk: 'Sticker: {x}', q_mood: 'Triff das Moodboard', q_lace: 'Schnürung: {x}', q_sil: 'Modell: {x}', q_keep: 'Rest so lassen',
+      zn0: 'Obermaterial', zn1: 'Seitenteil', zn2: 'Zehenkappe', zn3: 'Ferse', zn4: 'Kragen', zn5: 'Schnürsenkel', zn6: 'Zwischensohle', zn7: 'Sohle'
     }
   };
 
