@@ -88,6 +88,21 @@ Each game in batch 2 has its own look. The game's README defines its palette tok
 - Avoid real brands, logos and trademarked designs (for example sneaker swooshes or
   stripes), and real car models.
 
+### Batch 3 (Potion Sort, Ramen Rush, Putt Garden): one art direction per game
+
+Batch 3 follows the same per-game rules as batch 2 (palette tokens in the README and in one
+palette object in code, WCAG AA text, no flashing, 13+ tone, no real brands).
+
+| Game | Direction | Core palette |
+|---|---|---|
+| Potion Sort | candlelit apothecary: dark green wood, brass, parchment labels, glassy jewel liquids | shelf `#17322B`, brass `#D4A84B`, parchment `#F2E6C9`; liquids ruby `#E0475B`, sapphire `#3E7BFA`, emerald `#2FC77A`, amber `#FFB23E`, amethyst `#A45CF2`, aqua `#3FD8E0`, rose `#FF7FB0`, lime `#B6E34A` |
+| Ramen Rush | evening night-market stall: warm lantern glow, chunky cel-shaded food | dusk `#3B2230`, lantern `#E8483B`, glow `#FFC46B`, broth `#E9B872`, wood `#A8683C`, nori `#2E5E4E`, cream `#FFF3E0` |
+| Putt Garden | sunny papercut diorama: layered paper with soft drop shadows | mint bg `#DFF3E4`, grass `#6CC46A`, fairway `#8FD873`, sand `#F2D49B`, water `#4FB3E8`, stone `#C9C2B6`, ink `#24402E`, flag `#F2545B` |
+
+- **Color is never the only signal.** Wherever matching colors matters (most of all in
+  Potion Sort), give every color a distinct shape or glyph as well, so the game can be
+  played with color-vision deficiency.
+
 ## Screen and input
 
 - One full-window canvas, scaled by `devicePixelRatio` (cap it at 2). Handle `resize`.

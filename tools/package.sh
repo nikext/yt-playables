@@ -4,7 +4,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 games=("$@")
-[ ${#games[@]} -eq 0 ] && games=(prism-runner lantern-links island-ferry ink-path night-drift kicks-lab)
+[ ${#games[@]} -eq 0 ] && games=(prism-runner lantern-links island-ferry ink-path night-drift kicks-lab potion-sort ramen-rush putt-garden)
 mkdir -p dist
 for g in "${games[@]}"; do
   node tools/check-bundle.mjs "$g"
