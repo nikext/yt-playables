@@ -218,7 +218,7 @@
 
   // ---------- the bowl (3/4 view) ----------
   var TOP_POS = [[-0.45, -0.12], [0.42, -0.22], [0.02, 0.45]];
-  RR.bowl = function (c, x, y, r, b, t, glow) {
+  RR.bowl = function (c, x, y, r, b, t, glow, plain) {
     var ry = r * 0.36, w = Math.max(1.5, r * 0.07);
     ell(c, x, y + r * 0.66, r * 0.8, r * 0.14); c.fillStyle = 'rgba(20,8,14,0.35)'; c.fill();
     // body
@@ -248,8 +248,8 @@
       }
       // stamps on the bowl front: the broth glyph and the noodle glyph
       var sr = r * 0.17, sy = y + r * 0.4;
-      if (b.broth >= 0) { circ(c, x - (b.noodle >= 0 ? r * 0.21 : 0), sy, sr); fillStroke(c, C.cream, w * 0.7); RR.brothGlyph(c, b.broth, x - (b.noodle >= 0 ? r * 0.21 : 0), sy, sr * 0.62, C.ink); }
-      if (b.noodle >= 0) { var nx = x + (b.broth >= 0 ? r * 0.21 : 0); rr(c, nx - sr, sy - sr, sr * 2, sr * 2, sr * 0.4); fillStroke(c, C.cream, w * 0.7); RR.noodleGlyph(c, b.noodle, nx, sy, sr * 0.6, C.ink); }
+      if (b.broth >= 0 && !plain) { circ(c, x - (b.noodle >= 0 ? r * 0.21 : 0), sy, sr); fillStroke(c, C.cream, w * 0.7); RR.brothGlyph(c, b.broth, x - (b.noodle >= 0 ? r * 0.21 : 0), sy, sr * 0.62, C.ink); }
+      if (b.noodle >= 0 && !plain) { var nx = x + (b.broth >= 0 ? r * 0.21 : 0); rr(c, nx - sr, sy - sr, sr * 2, sr * 2, sr * 0.4); fillStroke(c, C.cream, w * 0.7); RR.noodleGlyph(c, b.noodle, nx, sy, sr * 0.6, C.ink); }
       if (b.drink >= 0) RR.drink(c, b.drink, x + r * 0.98, y + r * 0.3, r * 0.42);
       if (b.broth >= 0 && b.noodle >= 0) RR.steam(c, x, y - r * 0.2, r * 0.9, t || 0, 0.35);
     }

@@ -883,7 +883,7 @@
   }
 
   // ---------- drawing: title ----------
-  var HERO = { broth: 0, noodle: 0, tops: [0, 1, 3], drink: -1 };
+  var HERO = { broth: 0, noodle: 0, tops: [0, 1, 4], drink: -1 };
   function drawTitle() {
     drawBg();
     for (var d = 0; d < L.tDecor.length; d++) {
@@ -906,7 +906,7 @@
     RR.text(ctx, t('tag'), W / 2, ly + lpx * 1.75, Math.min(20, U * 0.045), C.cream, 'center', W - 40, '700');
     // hero bowl on the counter
     var br = clamp(U * 0.16, 50, 110);
-    RR.bowl(ctx, W / 2, L.counterY + L.counterH * 0.35, br, HERO, time, false);
+    RR.bowl(ctx, W / 2, L.counterY + L.counterH * 0.35, br, HERO, time, false, true);
     // buttons
     button(L.tPrimary, save.sh || hasProgress() ? t('cont', save.day) : t('play'), C.lantern, C.cream, 'play');
     if (hasProgress()) {
