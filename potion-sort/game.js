@@ -177,16 +177,23 @@
     var w = LY.w, ps = LY.pos[an.s], pd = LY.pos[an.d];
     var fill = an.preS.length;
     var ang = (52 + (CAP - fill) * 9) * Math.PI / 180;
-    var side = ps.x <= pd.x ? 1 : -1;
+    var side0 = ps.x <= pd.x ? 1 : -1, best = null;
     for (var tries = 0; tries < 2; tries++) {
+      var side = tries ? -side0 : side0;
       var a = ang * side, ca = Math.cos(a), sa = Math.sin(a);
       var px = side * w * 0.5, py = -GEO.FH * w;
       var mx = pd.x - side * w * 0.12, my = pd.y - GEO.FH * w - w * 0.75;
       var x = mx - (px * ca - py * sa), y = my - (px * sa + py * ca);
-      an.ang = a; an.px = x; an.py = y; an.mx = mx; an.my = my; an.side = side;
-      if (x > w * 0.6 && x < W - w * 0.6) break;
-      side = -side;
+      // how far the tilted flask would stick out of the screen
+      var over = 0, cx = [-0.55, 0.55, -0.55, 0.55], cy = [0, 0, -GEO.FH, -GEO.FH];
+      for (var k = 0; k < 4; k++) {
+        var qx = x + cx[k] * w * ca - cy[k] * w * sa;
+        over += Math.max(0, 4 - qx) + Math.max(0, qx - (W - 4));
+      }
+      if (!best || over < best.over - 0.5) best = { over: over, ang: a, px: x, py: y, mx: mx, my: my, side: side };
+      if (over <= 0) break;
     }
+    an.ang = best.ang; an.px = best.px; an.py = best.py; an.mx = best.mx; an.my = best.my; an.side = best.side;
   }
   function finishAnim(an) {
     var i = G.anims.indexOf(an);
@@ -655,7 +662,7 @@
   }
   function drawMessage() {
     var msg = null, warn = false;
-    if (G.won) return;
+    if (G.won || toast) return;
     if (G.stuck === 1) { msg = t('noMoves'); warn = true; }
     else if (G.stuck === 2) { msg = t('deadEnd'); warn = true; }
     else if (G.idx === 0 && !save.tut) msg = G.sel < 0 ? t('tutPick') : t('tutPour');
@@ -699,26 +706,28 @@
     var c = G.clear, age = now - c.t, k = easeOut(age / 0.4);
     ctx.fillStyle = 'rgba(6,16,13,' + (0.42 * k) + ')';
     ctx.fillRect(0, 0, W, H);
-    var cw = Math.min(W - 32, clamp(U * 88, 280, 440)), ch = clamp(U * 62, 250, 340);
-    if (c.last) ch += clamp(U * 6, 20, 34);
+    var cw = Math.min(W - 32, clamp(U * 88, 280, 440));
+    var fs = clamp(U * 8, 26, 44), sr = clamp(U * 6.5, 20, 38), fs2 = clamp(U * 4.2, 14, 22), bh = clamp(U * 12, 46, 62);
+    var note = c.newBest ? t('newBest') : c.refill ? t('refill') : '';
+    var pad = clamp(U * 4, 14, 26);
+    // stack the card from the top so nothing overlaps on short screens
+    var yT = pad + fs * 0.55, yS = yT + fs * 0.55 + pad * 0.6 + sr * 1.1, yM = yS + sr * 1.05 + pad * 0.5 + fs2 * 0.5;
+    var yN = yM + fs2 * 1.35, yF = yN + (note ? fs2 * 1.3 : 0);
+    var ch = (c.last ? yF + fs2 * 0.6 : note ? yN + fs2 * 0.6 : yM + fs2 * 0.6) + pad * 0.9 + bh + pad;
     var x = W / 2 - cw / 2, y = H / 2 - ch / 2 + (1 - easeBack(age / 0.45)) * H * 0.3;
     A.panel(ctx, x, y, cw, ch, 18);
-    var fs = clamp(U * 8, 28, 44);
-    A.text(ctx, t('clear'), W / 2, y + ch * 0.15, fs, C.ink, 'center', 900, cw - 40);
-    var sr = clamp(U * 7, 24, 38);
+    A.text(ctx, t('clear'), W / 2, y + yT, fs, C.ink, 'center', 900, cw - 40);
     for (var i = 0; i < 3; i++) {
       var on = i < G.starShown, sc = on ? easeBack(clamp((age - 0.55 - i * 0.32) / 0.3, 0, 1)) : 1;
-      var sx = W / 2 + (i - 1) * sr * 2.5, sy = y + ch * 0.38 - (i === 1 ? sr * 0.25 : 0);
+      var sx = W / 2 + (i - 1) * sr * 2.5, sy = y + yS - (i === 1 ? sr * 0.25 : 0);
       if (!on) A.star(ctx, sx, sy, sr, false, 'rgba(94,76,53,0.25)');
       else A.star(ctx, sx, sy, sr * Math.max(0.01, sc), true);
     }
-    var fs2 = clamp(U * 4.2, 15, 22);
-    A.text(ctx, t('moves') + ' ' + G.moves + '  ·  ' + t('par') + ' ' + G.par, W / 2, y + ch * 0.58, fs2, C.inkSoft, 'center', 800, cw - 30);
-    var note = c.newBest ? t('newBest') : c.refill ? t('refill') : '';
-    if (note) A.text(ctx, note, W / 2, y + ch * 0.68, fs2 * 0.9, C.sealDeep, 'center', 900, cw - 30);
-    if (c.last) A.text(ctx, t('finale'), W / 2, y + ch * 0.74, fs2 * 0.85, C.ink, 'center', 800, cw - 30);
-    var bh = clamp(U * 12, 48, 62), gap = 12, small = bh * 1.1;
-    var by = y + ch - bh - 26;
+    A.text(ctx, t('moves') + ' ' + G.moves + '  ·  ' + t('par') + ' ' + G.par, W / 2, y + yM, fs2, C.inkSoft, 'center', 800, cw - 30);
+    if (note) A.text(ctx, note, W / 2, y + yN, fs2 * 0.95, C.sealDeep, 'center', 900, cw - 30);
+    if (c.last) A.text(ctx, t('finale'), W / 2, y + yF, fs2 * 0.85, C.ink, 'center', 800, cw - 30);
+    var gap = 12, small = bh * 1.1;
+    var by = y + ch - bh - pad;
     var bx = x + 22, nextW = cw - 44 - 2 * small - 2 * gap;
     button('cMenu', bx, by, small, bh, { icon: 'grid', act: goSelect });
     button('cReplay', bx + small + gap, by, small, bh, { icon: 'reset', act: function () { startLevel(G.idx); } });
@@ -798,11 +807,19 @@
     var bw = clamp(U * 52, 200, 300), bh = clamp(U * 14, 56, 72);
     var by = portrait ? H * 0.66 : H * 0.7;
     var nl = nextLevel();
-    button('play', W / 2 - bw / 2, by, bw, bh, { style: 'brass', icon: 'play', label: t('play'), size: bh * 0.42, act: onPlay });
-    A.text(ctx, t('level', nl + 1), W / 2, by + bh + clamp(U * 4, 16, 26), clamp(U * 3.6, 13, 18), C.parchDeep, 'center', 700);
     var lb = clamp(U * 40, 160, 230), lh = clamp(U * 11, 46, 58);
-    var ly = by + bh + clamp(U * 9, 36, 56);
-    button('levelsT', W / 2 - lb / 2, ly, lb, lh, { style: 'parch', icon: 'grid', label: t('levels'), act: function () { selShelf = Math.floor(nl / PER); screen = 'select'; focusId = null; } });
+    var px = W / 2 - bw / 2, lx = W / 2 - lb / 2, ly = by + bh + clamp(U * 9, 36, 56);
+    if (ly + lh + 8 > H - m) {
+      // short screens: Play and Levels side by side
+      var gap = 16;
+      px = W / 2 - (bw + gap + lb) / 2; lx = px + bw + gap;
+      by = Math.min(by, H - m - bh - clamp(U * 6, 22, 30));
+      ly = by + (bh - lh) / 2;
+    }
+    var levelsAct = function () { selShelf = Math.floor(nl / PER); screen = 'select'; focusId = null; };
+    button('play', px, by, bw, bh, { style: 'brass', icon: 'play', label: t('play'), size: bh * 0.42, act: onPlay });
+    A.text(ctx, t('level', nl + 1), px + bw / 2, by + bh + clamp(U * 4, 16, 26), clamp(U * 3.6, 13, 18), C.parchDeep, 'center', 700);
+    button('levelsT', lx, ly, lb, lh, { style: 'parch', icon: 'grid', label: t('levels'), act: levelsAct });
     // stars + toggles
     var ss = clamp(U * 4, 16, 24);
     var tot = totalStars() + ' / ' + NLV * 3;
@@ -911,7 +928,10 @@
         ctx.font = A.font(fs, 800);
         var w = Math.min(W - 32, ctx.measureText(toast.s).width + fs * 2);
         ctx.globalAlpha = clamp((2.6 - age) * 3, 0, 1);
-        var ty = screen === 'game' && LY ? H - LY.toolH - LY.m - fs * 1.6 : H * 0.5;
+        var ty = screen === 'game' && LY && G && !G.clear && !G.menu ? LY.msgY : H * 0.5;
+        if (screen === 'game' && LY) fs = Math.min(fs, LY.msgH * 0.42);
+        ctx.font = A.font(fs, 800);
+        w = Math.min(W - 32, ctx.measureText(toast.s).width + fs * 2);
         ctx.fillStyle = 'rgba(12,29,24,0.94)'; A.rr(ctx, W / 2 - w / 2, ty - fs * 1.2, w, fs * 2.4, fs * 1.2); ctx.fill();
         ctx.strokeStyle = 'rgba(212,168,75,0.7)'; ctx.lineWidth = 1.5; A.rr(ctx, W / 2 - w / 2, ty - fs * 1.2, w, fs * 2.4, fs * 1.2); ctx.stroke();
         A.text(ctx, toast.s, W / 2, ty + 1, fs, C.parchment, 'center', 800, w - fs);
