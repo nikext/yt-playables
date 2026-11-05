@@ -327,7 +327,7 @@
     G = {
       idx: idx, H: H0, w: w, acc: 0, phase: 'play', startT: now, sinkT: 0, doneT: 0,
       drag: null, aim: { ang: 0, pow: 0.5, on: false }, ballFadeT: -9, bump: [], gateFlash: [],
-      result: null, arrows: [], shake: 0, restStep: 0, wasReady: true, armed: null, tipT: now, lastShotT: -9, sunkFrom: null, pipeT: -9, pipeFrom: null
+      result: null, arrows: [], shake: 0, restStep: 0, wasReady: true, armed: null, queue: null, tipT: now, lastShotT: -9, sunkFrom: null, pipeT: -9, pipeFrom: null
     };
     for (var i = 0; i < w.circ.length; i++) G.bump.push(-9);
     // default keyboard aim: towards the cup
@@ -391,6 +391,7 @@
     G.acc += dt;
     var n = 0;
     while (G.acc >= DT && n < 30) {
+      if (!G.armed && G.queue && G.queue.length) { var q = G.queue.shift(); G.armed = [q[0] * Math.PI / 180, q[1], Math.round(q[2] / DT)]; }
       if (G.armed && P.canShoot(w) && w.step >= G.restStep + G.armed[2]) { var am = G.armed; G.armed = null; shoot(am[0], am[1]); }
       P.step(w); G.acc -= DT; n++;
       var rdy = P.canShoot(w);
@@ -1074,7 +1075,7 @@
     },
     shots: function (i) { return HOLES[i].shots; },
     // test only: putt at the exact physics step a reference shot expects (for timed holes)
-    arm: function (deg, pow, wait) { if (G) G.armed = [deg * Math.PI / 180, pow, Math.round(wait / DT)]; },
+    autoplay: function (i) { startHole(i); G.queue = HOLES[i].shots.slice(); },
     button: function (id) { var b = uiById(id); return b ? { x: b.x + b.w / 2, y: b.y + b.h / 2 } : null; }
   };
 
