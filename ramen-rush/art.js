@@ -217,7 +217,7 @@
   RR.noodlesIn = noodlesIn;
 
   // ---------- the bowl (3/4 view) ----------
-  var TOP_POS = [[-0.42, -0.1], [0.4, -0.2], [0.05, 0.42]];
+  var TOP_POS = [[-0.45, -0.12], [0.42, -0.22], [0.02, 0.45]];
   RR.bowl = function (c, x, y, r, b, t, glow) {
     var ry = r * 0.36, w = Math.max(1.5, r * 0.07);
     ell(c, x, y + r * 0.66, r * 0.8, r * 0.14); c.fillStyle = 'rgba(20,8,14,0.35)'; c.fill();
@@ -244,7 +244,7 @@
       c.restore();
       for (var k = 0; k < b.tops.length; k++) {
         var p = TOP_POS[k];
-        RR.topping(c, b.tops[k], x + p[0] * r, y + p[1] * ry - r * 0.05, r * 0.42, (k - 1) * 0.25);
+        RR.topping(c, b.tops[k], x + p[0] * r, y + p[1] * ry - r * 0.05, r * 0.5, (k - 1) * 0.25);
       }
       if (b.drink >= 0) RR.drink(c, b.drink, x + r * 0.98, y + r * 0.3, r * 0.42);
       if (b.broth >= 0 && b.noodle >= 0) RR.steam(c, x, y - r * 0.2, r * 0.9, t || 0, 0.35);

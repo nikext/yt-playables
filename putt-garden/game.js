@@ -44,7 +44,7 @@
   function played(i) { return i >= 0 && i < NH && save.best[i] > 0; }
   function courseDone(c) { for (var i = c * PER; i < (c + 1) * PER; i++) if (!played(i)) return false; return true; }
   function courseOpen(c) { return c === 0 || courseDone(c - 1); }
-  function holeOpen(i) { return i % PER === 0 ? courseOpen(Math.floor(i / PER)) : played(i - 1); }
+  function holeOpen(i) { return played(i) || (i % PER === 0 ? courseOpen(Math.floor(i / PER)) : played(i - 1)); }
   function coursePar(c) { var s = 0; for (var i = c * PER; i < (c + 1) * PER; i++) s += HOLES[i].par; return s; }
   function cap(i) { return HOLES[i].par + 4; }
 
@@ -327,7 +327,7 @@
     G = {
       idx: idx, H: H0, w: w, acc: 0, phase: 'play', startT: now, sinkT: 0, doneT: 0,
       drag: null, aim: { ang: 0, pow: 0.5, on: false }, ballFadeT: -9, bump: [], gateFlash: [],
-      result: null, arrows: [], shake: 0, tipT: now, lastShotT: -9, sunkFrom: null, pipeT: -9, pipeFrom: null
+      result: null, arrows: [], shake: 0, restStep: 0, wasReady: true, armed: null, tipT: now, lastShotT: -9, sunkFrom: null, pipeT: -9, pipeFrom: null
     };
     for (var i = 0; i < w.circ.length; i++) G.bump.push(-9);
     // default keyboard aim: towards the cup
@@ -391,7 +391,11 @@
     G.acc += dt;
     var n = 0;
     while (G.acc >= DT && n < 30) {
+      if (G.armed && P.canShoot(w) && w.step >= G.restStep + G.armed[2]) { var am = G.armed; G.armed = null; shoot(am[0], am[1]); }
       P.step(w); G.acc -= DT; n++;
+      var rdy = P.canShoot(w);
+      if (rdy && !G.wasReady) G.restStep = w.step;
+      G.wasReady = rdy;
       for (var e = 0; e < w.ev.n; e++) handleEvent(w.ev.type[e], w.ev.x[e], w.ev.y[e], w.ev.s[e]);
     }
     if (n >= 30) G.acc = 0;
@@ -416,7 +420,7 @@
     return '+' + d;
   }
   function finishHole(sunk) {
-    var idx = G.idx, par = G.H.par, score = sunk ? P.score(G.w) : cap(idx) + 1;
+    var idx = G.idx, par = G.H.par, score = sunk ? P.score(G.w) : cap(idx);
     var stars = sunk ? (score < par ? 3 : score === par ? 2 : 1) : 0;
     var before = totalStars();
     var wasPlayed = played(idx), newBest = !wasPlayed || score < save.best[idx];
@@ -622,7 +626,7 @@
     card(x, y, cw, chh, 24);
     var col = r.sunk ? (r.stars === 3 ? BTN : PAL.ink) : PAL.inkSoft;
     text(r.term, W / 2, y + chh * 0.17, clamp(cw * 0.1, 26, 40), col, 'center', 900, cw - 40);
-    var sub = r.sunk ? (r.score + ' ' + t('strokes').toLowerCase() + ' · ' + t('par') + ' ' + G.H.par) : (t('par') + ' ' + G.H.par);
+    var sub = (r.sunk ? t('strokes') + ' ' + r.score + ' · ' : '') + t('par') + ' ' + G.H.par;
     text(sub, W / 2, y + chh * 0.33, 17, PAL.inkSoft, 'center', 700, cw - 40);
     var sr = clamp(cw * 0.065, 18, 26);
     starsRow(W / 2, y + chh * 0.52, sr, r.stars, 3, function (i) {
@@ -1069,6 +1073,8 @@
       return { x0: b.x, y0: b.y, x1: b.x - d.x * L, y1: b.y - d.y * L };
     },
     shots: function (i) { return HOLES[i].shots; },
+    // test only: putt at the exact physics step a reference shot expects (for timed holes)
+    arm: function (deg, pow, wait) { if (G) G.armed = [deg * Math.PI / 180, pow, Math.round(wait / DT)]; },
     button: function (id) { var b = uiById(id); return b ? { x: b.x + b.w / 2, y: b.y + b.h / 2 } : null; }
   };
 

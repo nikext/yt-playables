@@ -80,6 +80,10 @@
     L.aw = clamp(H * 0.05, 26, 44);
     setR(L.hint, p, L.custTop, W - 2 * p, Math.min(54, (L.counterY - L.custTop) * 0.3));
     if (G) layoutPlay();
+    if (L.land && L.seats.length > 1) {
+      var hs = L.seats[1], hh = Math.min(96, L.counterY - L.custTop - 16);
+      setR(L.hint, hs.x + 8, L.custTop + (L.counterY - L.custTop - hh) / 2 - 4, hs.w - 16, hh);
+    }
     layoutMenus();
     bgCache = null; kitCache = null;
   }
@@ -91,11 +95,11 @@
     L.seats = [];
     for (i = 0; i < n; i++) L.seats.push(setR(rect(), x0 + i * colW, L.custTop, colW, L.counterY - L.custTop + 6));
     // bowls on the counter, then the bin
-    var ns = sh.slots.length, cells = ns + 1;
+    var ns = sh.slots.length, tc = 0.75, cells = ns + tc;
     var cellW = Math.min(L.land ? 150 : 112, (W - 2 * p) / cells), gx = (W - cells * cellW) / 2;
     L.slots = [];
-    for (i = 0; i < ns; i++) L.slots.push(setR(rect(), gx + i * cellW + 3, L.counterY + 2, cellW - 6, L.counterH - 4));
-    setR(L.trash, gx + ns * cellW + 3, L.counterY + 2, cellW - 6, L.counterH - 4);
+    for (i = 0; i < ns; i++) L.slots.push(setR(rect(), gx + i * cellW + 2, L.counterY + 2, cellW - 4, L.counterH - 4));
+    setR(L.trash, gx + ns * cellW + 2, L.counterY + 2, cellW * tc - 4, L.counterH - 4);
     // kitchen stations
     L.st = stationsFor(sh);
     L.burn = [];
@@ -137,13 +141,13 @@
     setR(L.mResume, L.mPanel.x + 24, L.mPanel.y + 76, mw - 48, 52);
     setR(L.mSound, L.mPanel.x + 24, L.mPanel.y + 140, mw - 48, 52);
     setR(L.mQuit, L.mPanel.x + 24, L.mPanel.y + 204, mw - 48, 52);
-    var sw = Math.min(W - 28, 460), shh = Math.min(H - 28, 560);
+    var sw = Math.min(W - 28, 460), shh = Math.min(H - 28, 520);
     setR(L.sPanel, (W - sw) / 2, (H - shh) / 2, sw, shh);
     setR(L.sNext, L.sPanel.x + 24, L.sPanel.y + shh - 76, sw - 48, 56);
     // shop: 9 cards
     var hdr = 76, foot = 86, gx = 10, cols = L.land ? (W > 1000 ? 5 : 4) : (W >= 560 ? 3 : 2), rows = Math.ceil(9 / cols);
     var aw = Math.min(W - 2 * p, L.land ? 1180 : 720), ah = H - hdr - foot - p;
-    var cwid = (aw - (cols - 1) * gx) / cols, chei = Math.min(170, (ah - (rows - 1) * gx) / rows);
+    var cwid = (aw - (cols - 1) * gx) / cols, chei = Math.min(L.land ? 150 : 170, (ah - (rows - 1) * gx) / rows);
     var ox = (W - aw) / 2, oy = hdr + Math.max(0, (ah - rows * chei - (rows - 1) * gx) / 2);
     for (var i = 0; i < 9; i++) {
       var r = Math.floor(i / cols), c = i % cols, inRow = r === rows - 1 ? 9 - r * cols : cols;
@@ -203,13 +207,12 @@
     save = s;
   }
   function persist() { PlayablesSDK.save(save); }
-  function totalStars() { var n = 0; for (var i = 0; i < save.st.length; i++) n += +save.st[i]; return n; }
 
   // ---------- shift ----------
   function startShift() {
     var tut = !save.tut && save.day === 1;
     var sh = new RR.Shift({ day: save.day, up: save.up, sp: save.sp, rep: save.rep, seed: (save.day * 7919 + save.played * 104729 + 17) >>> 0, tutorial: tut });
-    G = { sh: sh, intro: tut ? 0 : 2.4, introMax: 2.4, endT: -1, tutDone: !tut, tutMsgT: 0, bubbleT: 0, closeT: 0, lastAdd: {}, news: RR.newOnDay(save.day), looks: {} };
+    G = { sh: sh, intro: tut ? 0 : 2.4, introMax: 2.4, endT: -1, tutDone: !tut, tip: false, bubbleT: 0, closeT: 0, lastAdd: {}, news: RR.newOnDay(save.day), looks: {} };
     scene = 'play'; menuOpen = false; needTap = false; fx = []; fly = []; shake = {}; ptr = null; focus = -1;
     layout();
     AU.music(true, 0.5);
@@ -217,10 +220,10 @@
   }
   function lookFor(c) { return G.looks[c.id] || (G.looks[c.id] = RR.look(c.look)); }
   function seatPos(i) {
-    var r = L.seats[i], hr = Math.min(r.w * 0.2, (L.counterY - L.custTop) * 0.16, 50);
+    var r = L.seats[i], zone = L.counterY - L.custTop, hr = Math.min(r.w * 0.24, zone * (zone < 190 ? 0.26 : 0.16), 50);
     return { x: cx(r), y: L.counterY - hr * 1.45, r: hr };
   }
-  function slotPos(i) { var r = L.slots[i]; return { x: cx(r), y: r.y + r.h * 0.42, r: Math.min(r.w * 0.36, r.h * 0.36) }; }
+  function slotPos(i) { var r = L.slots[i]; return { x: cx(r), y: r.y + r.h * 0.42, r: Math.min(r.w * 0.41, r.h * 0.37) }; }
 
   function stationTap(j, prefSlot) {
     var s = L.st[j], sh = G.sh, res;
@@ -272,6 +275,7 @@
       for (var s = 0; s < sh.slots.length; s++) if (RR.bowlEmpty(sh.slots[s]) && !RR.bowlEmpty(before[s])) { flyItem(-1, before[s], L.slots[s], null, seatPos(i)); break; }
     }
   }
+  function closeTip() { G.tip = false; G.sh.hold = false; AU.play('click'); }
   function trashTap(slot) { G.sh.trash(slot == null ? G.sh.sel : slot); }
 
   function flyItem(k, n, from, to, pos) {
@@ -305,7 +309,7 @@
         floatText('+' + (e.price + e.tip + e.bonus), p.x, p.y - p.r * 1.6, C.glow, 26);
         if (e.streak >= 2) floatText(t('streakN', e.streak), p.x, p.y - p.r * 0.6, C.cream, 16, 0.25);
         sparkle(p.x, p.y - p.r, e.vip ? C.gold : C.glow, e.vip ? 18 : 10);
-        if (!G.tutDone) { G.tutDone = true; G.tutMsgT = 6; save.tut = 1; persist(); }
+        if (!G.tutDone) { G.tutDone = true; G.tip = true; sh.hold = true; save.tut = 1; persist(); }
       } else if (e.type === 'lost') {
         var q = seatPos(e.seat);
         AU.play('angry');
@@ -451,7 +455,8 @@
     if (needTap) { needTap = false; AU.play('tick'); return; }
     if (scene === 'play' && !menuOpen) {
       if (inR(L.pause, x, y)) { menuOpen = true; AU.play('click'); return; }
-      if (G.intro > 0 && G.intro < G.introMax - 0.3) { G.intro = 0; return; }
+      if (G.intro > 0) { if (G.intro < G.introMax - 0.3) G.intro = 0; return; }
+      if (G.tip) { closeTip(); return; }
       var h = hitPlay(x, y);
       ptr = { id: id, x0: x, y0: y, x: x, y: y, src: h, drag: false };
       return;
@@ -567,6 +572,7 @@
       if (k === 'Escape' || low === 'p') { menuOpen = !menuOpen; AU.play('click'); e.preventDefault(); return; }
       if (menuOpen) { if (k === 'Enter' || k === ' ') { menuOpen = false; e.preventDefault(); } else if (low === 'q') goTitle(); return; }
       if (G.intro > 0) { if (k === 'Enter' || k === ' ') G.intro = 0; e.preventDefault(); return; }
+      if (G.tip) { if (k === 'Enter' || k === ' ') closeTip(); e.preventDefault(); return; }
       if (k >= '1' && k <= '4') { var si = +k - 1; if (si < L.slots.length) slotTap(si); e.preventDefault(); return; }
       if (low === 'x' || k === 'Delete' || k === 'Backspace') { trashTap(); e.preventDefault(); return; }
       if (k === 'ArrowLeft') { moveFocus(-1, 0); e.preventDefault(); return; }
@@ -637,20 +643,37 @@
   function drawBubble(i, c) {
     var p = seatPos(i), sr = L.seats[i], sh = G.sh;
     var o = c.o, row2 = o.tops.length, cols = Math.max(o.drink >= 0 ? 3 : 2, row2);
-    var avail = Math.min(sr.w - 10, 230), s = clamp(avail / (cols * 1.08 + 0.4), 20, 44), pad = s * 0.22;
+    var zoneH = L.counterY - L.custTop, avail = Math.min(sr.w - 10, 230);
+    if (L.land && zoneH < 190) avail = Math.min(avail, sr.w * 0.5 - p.r * 1.3);
+    var s = clamp(Math.min(avail / (cols * 1.08 + 0.4), L.land ? (zoneH - 26) / 2.5 : 99), 18, 44), pad = s * 0.22;
     var bw = cols * s * 1.08 + pad * 2, bh = 2 * s * 1.05 + pad * 2 + 10;
     var earTop = p.y - p.r * (lookFor(c).sp === 4 ? 1.9 : 1.3);
-    var by = Math.max(L.custTop + (G.tutDone ? 2 : L.hint.h + 6), earTop - bh - 6), bx = clamp(p.x - bw / 2, sr.x + 4, sr.x + sr.w - bw - 4);
-    if (by + bh > p.y - p.r * 0.2) by = p.y - p.r * 0.2 - bh;
+    var minTop = L.custTop + (G.tutDone || L.land ? 2 : L.hint.h + 6);
+    var side = 0, by = Math.max(minTop, earTop - bh - 6), bx = clamp(p.x - bw / 2, sr.x + 4, sr.x + sr.w - bw - 4);
+    if (L.land && earTop - bh - 6 < minTop) {
+      // short screens: the bubble sits beside the customer instead of above
+      side = p.x + p.r * 1.3 + bw <= sr.x + sr.w - 2 ? 1 : -1;
+      bx = side > 0 ? p.x + p.r * 1.3 : p.x - p.r * 1.3 - bw;
+      by = clamp(p.y - bh / 2 - p.r * 0.4, L.custTop + 2, L.counterY - bh - 6);
+    } else if (by + bh > p.y - p.r * 0.2) by = p.y - p.r * 0.2 - bh;
     var frac = c.pat / c.max, low = frac < 0.3, sk = low ? Math.sin(time * 26) * 1.5 : 0;
     bx += sk;
     var matchSel = RR.bowlReady(sh.slots[sh.sel]) && RR.matches(sh.slots[sh.sel], o);
     RR.panel(ctx, bx, by, bw, bh, 14, o.vip ? '#FFF0C8' : C.cream, 4, matchSel ? 4 : 3);
     if (matchSel) { ctx.strokeStyle = C.good; ctx.lineWidth = 3; RR.rr(ctx, bx - 4, by - 4, bw + 8, bh + 8, 17); ctx.stroke(); }
     // tail
-    ctx.beginPath(); ctx.moveTo(p.x - 8 + sk, by + bh - 1); ctx.lineTo(p.x + sk, by + bh + 9); ctx.lineTo(p.x + 8 + sk, by + bh - 1); ctx.closePath();
-    ctx.fillStyle = o.vip ? '#FFF0C8' : C.cream; ctx.fill(); ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.stroke();
-    ctx.fillStyle = o.vip ? '#FFF0C8' : C.cream; ctx.fillRect(p.x - 6 + sk, by + bh - 4, 12, 4);
+    var bub = o.vip ? '#FFF0C8' : C.cream;
+    ctx.beginPath();
+    if (side) {
+      var ex = side > 0 ? bx + 1 : bx + bw - 1, ty = clamp(p.y - p.r * 0.2, by + 10, by + bh - 10);
+      ctx.moveTo(ex, ty - 7); ctx.lineTo(ex - side * 10, ty); ctx.lineTo(ex, ty + 7); ctx.closePath();
+      ctx.fillStyle = bub; ctx.fill(); ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.stroke();
+      ctx.fillStyle = bub; ctx.fillRect(side > 0 ? ex : ex - 4, ty - 5, 4, 10);
+    } else {
+      ctx.moveTo(p.x - 8 + sk, by + bh - 1); ctx.lineTo(p.x + sk, by + bh + 9); ctx.lineTo(p.x + 8 + sk, by + bh - 1); ctx.closePath();
+      ctx.fillStyle = bub; ctx.fill(); ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.stroke();
+      ctx.fillStyle = bub; ctx.fillRect(p.x - 6 + sk, by + bh - 4, 12, 4);
+    }
     var ix = bx + pad + s * 0.54, iy = by + pad + s * 0.5;
     RR.icon(ctx, 0, o.broth, ix, iy, s);
     RR.icon(ctx, 1, o.noodle, ix + s * 1.08, iy, s);
@@ -760,14 +783,28 @@
     var r = L.hint;
     ctx.globalAlpha = alpha == null ? 1 : alpha;
     RR.panel(ctx, r.x, r.y, r.w, r.h, 14, C.cream, 4, 3);
-    var lines = RR.wrap(ctx, msg, r.w - 28, Math.min(18, r.h * 0.36), '800');
-    var px = Math.min(18, r.h * 0.36);
-    if (lines.length > 2) { px = Math.min(15, r.h * 0.28); lines = RR.wrap(ctx, msg, r.w - 28, px, '800'); }
+    var px = Math.min(18, r.h * 0.36), lines = RR.wrap(ctx, msg, r.w - 28, px, '800');
+    while (lines.length * px * 1.15 > r.h - 10 && px > 11) { px -= 1; lines = RR.wrap(ctx, msg, r.w - 28, px, '800'); }
+    if (lines.length === 1 && r.h > 70) px = Math.min(20, px + 2);
     for (var i = 0; i < lines.length; i++) RR.text(ctx, lines[i], r.x + r.w / 2, r.y + r.h / 2 + (i - (lines.length - 1) / 2) * px * 1.15, px, C.ink, 'center', r.w - 20, '800');
     ctx.globalAlpha = 1;
   }
+  function drawTip() {
+    veil(0.5);
+    var w = Math.min(W - 40, 420), x = (W - w) / 2;
+    var lines = RR.wrap(ctx, t('tut7'), w - 48, 20, '800'), h = 150 + lines.length * 26, y = (H - h) / 2;
+    RR.panel(ctx, x, y, w, h, 22, C.cream, 6, 3);
+    // a sample patience bar draining
+    var f = 1 - (time * 0.25) % 1, bx = x + 40, bw2 = w - 80;
+    RR.clock(ctx, bx - 14, y + 38, 9, C.ink);
+    RR.rr(ctx, bx + 4, y + 33, bw2 - 4, 10, 5); ctx.fillStyle = 'rgba(42,22,32,0.2)'; ctx.fill();
+    RR.rr(ctx, bx + 4, y + 33, Math.max(10, (bw2 - 4) * f), 10, 5); ctx.fillStyle = f > 0.55 ? C.good : f > 0.3 ? C.glow : C.lantern; ctx.fill();
+    for (var i = 0; i < lines.length; i++) RR.text(ctx, lines[i], W / 2, y + 76 + i * 26, 20, C.ink, 'center', w - 40, '800');
+    RR.uiIcon(ctx, 'play', W / 2 - 80, y + h - 34, 20, C.lantern);
+    RR.text(ctx, t('tapCont'), W / 2 + 10, y + h - 33, 17, C.lantern, 'center', w - 120, '900');
+  }
   function drawTutorial() {
-    if (G.tutMsgT > 0) { hintPanel(t('tut7'), clamp(G.tutMsgT, 0, 1)); return; }
+    if (G.tip) { drawTip(); return; }
     var st = tutorialStep();
     if (!st) return;
     hintPanel(t(st.msg));
@@ -841,7 +878,7 @@
     drawFx();
     drawDrag();
     drawHud();
-    if (!G.tutDone || G.tutMsgT > 0) drawTutorial();
+    if (!G.tutDone || G.tip) drawTutorial();
     drawBanner();
   }
 
@@ -1041,7 +1078,6 @@
       G.sh.update(dt);
       handleEvents();
       if (G.closeT > 0) G.closeT -= dt;
-      if (G.tutMsgT > 0) G.tutMsgT -= dt;
       bubbleClock -= dt;
       if (bubbleClock <= 0) { bubbleClock = 0.22 + Math.random() * 0.2; if (G.sh.boilers.some(function (b) { return b.st === 1; })) AU.play('bubble'); }
       if (G.endT > 0) { G.endT -= dt; if (G.endT <= 0) endShift(); }
@@ -1092,7 +1128,7 @@
         st: L.st.map(function (s) { return { k: s.k, n: s.n, r: rr(s.r) }; }), counterY: L.counterY };
       if (G) {
         var sh = G.sh;
-        o.shift = { day: sh.day, t: sh.t, len: sh.len, open: sh.open, done: sh.done, hold: sh.hold, sel: sh.sel, intro: G.intro, tutDone: G.tutDone,
+        o.shift = { day: sh.day, t: sh.t, len: sh.len, open: sh.open, done: sh.done, hold: sh.hold, sel: sh.sel, intro: G.intro, tutDone: G.tutDone, tip: G.tip,
           seats: sh.seats.map(function (c) { return c ? { id: c.id, st: c.st, o: c.o, pat: c.pat, max: c.max } : null; }),
           slots: JSON.parse(JSON.stringify(sh.slots)), boilers: JSON.parse(JSON.stringify(sh.boilers)), stats: JSON.parse(JSON.stringify(sh.stats)), goal: sh.cfg.goal };
       }
