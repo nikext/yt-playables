@@ -645,7 +645,7 @@
     var o = c.o, row2 = o.tops.length, cols = Math.max(o.drink >= 0 ? 3 : 2, row2);
     var zoneH = L.counterY - L.custTop, avail = Math.min(sr.w - 10, 230);
     if (L.land && zoneH < 190) avail = Math.min(avail, sr.w * 0.5 - p.r * 1.3);
-    var s = clamp(Math.min(avail / (cols * 1.08 + 0.4), L.land ? (zoneH - 26) / 2.5 : 99), 18, 44), pad = s * 0.22;
+    var s = clamp(Math.min(avail / (3 * 1.08 + 0.4), L.land ? (zoneH - 26) / 2.5 : 99), 18, 44), pad = s * 0.22;
     var bw = cols * s * 1.08 + pad * 2, bh = 2 * s * 1.05 + pad * 2 + 10;
     var earTop = p.y - p.r * (lookFor(c).sp === 4 ? 1.9 : 1.3);
     var minTop = L.custTop + (G.tutDone || L.land ? 2 : L.hint.h + 6);

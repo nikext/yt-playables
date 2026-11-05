@@ -240,12 +240,16 @@
     if (b) {
       c.save(); ell(c, x, y + ry * 0.04, r * 0.86, ry * 0.8); c.clip();
       if (b.broth >= 0) brothSurface(c, b.broth, x, y + ry * 0.04, r * 0.86, ry * 0.8, t || 0);
-      if (b.noodle >= 0) noodlesIn(c, b.noodle, x, y + ry * 0.1, r * 0.62, ry * 0.62);
+      if (b.noodle >= 0) noodlesIn(c, b.noodle, x + r * 0.05, y + ry * 0.12, r * 0.52, ry * 0.5);
       c.restore();
       for (var k = 0; k < b.tops.length; k++) {
         var p = TOP_POS[k];
         RR.topping(c, b.tops[k], x + p[0] * r, y + p[1] * ry - r * 0.05, r * 0.5, (k - 1) * 0.25);
       }
+      // stamps on the bowl front: the broth glyph and the noodle glyph
+      var sr = r * 0.17, sy = y + r * 0.4;
+      if (b.broth >= 0) { circ(c, x - (b.noodle >= 0 ? r * 0.21 : 0), sy, sr); fillStroke(c, C.cream, w * 0.7); RR.brothGlyph(c, b.broth, x - (b.noodle >= 0 ? r * 0.21 : 0), sy, sr * 0.62, C.ink); }
+      if (b.noodle >= 0) { var nx = x + (b.broth >= 0 ? r * 0.21 : 0); rr(c, nx - sr, sy - sr, sr * 2, sr * 2, sr * 0.4); fillStroke(c, C.cream, w * 0.7); RR.noodleGlyph(c, b.noodle, nx, sy, sr * 0.6, C.ink); }
       if (b.drink >= 0) RR.drink(c, b.drink, x + r * 0.98, y + r * 0.3, r * 0.42);
       if (b.broth >= 0 && b.noodle >= 0) RR.steam(c, x, y - r * 0.2, r * 0.9, t || 0, 0.35);
     }
@@ -268,13 +272,11 @@
 
   // ---------- order icons ----------
   RR.icon = function (c, k, n, x, y, s) {
-    if (k === 0) { // a small bowl of that broth with its glyph
-      var r = s * 0.5;
-      c.beginPath(); c.moveTo(x - r, y - r * 0.1); c.quadraticCurveTo(x - r, y + r * 0.8, x, y + r * 0.8); c.quadraticCurveTo(x + r, y + r * 0.8, x + r, y - r * 0.1); c.closePath();
-      fillStroke(c, C.lantern, s * 0.06);
-      ell(c, x, y - r * 0.1, r, r * 0.34); fillStroke(c, F.broth[n], s * 0.06);
-      circ(c, x, y + r * 0.38, r * 0.42); fillStroke(c, C.cream, s * 0.04);
-      RR.brothGlyph(c, n, x, y + r * 0.38, r * 0.3, C.ink);
+    if (k === 0) { // a bowl of that broth seen from above, with its glyph large in the middle
+      circ(c, x, y, s * 0.5); fillStroke(c, C.lantern, Math.max(1.5, s * 0.07));
+      circ(c, x, y, s * 0.38); fillStroke(c, F.broth[n], Math.max(1, s * 0.04));
+      c.fillStyle = 'rgba(255,255,255,0.35)'; ell(c, x - s * 0.16, y - s * 0.2, s * 0.12, s * 0.05, -0.5); c.fill();
+      RR.brothGlyph(c, n, x, y + s * 0.02, s * 0.24, n === 0 || n === 3 ? C.cream : C.ink);
     } else if (k === 1) { // noodles lifted by chopsticks
       var col = n === 2 ? F.udon : F.noodle;
       c.save(); c.translate(x, y);
