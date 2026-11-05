@@ -26,21 +26,24 @@ jobs:
 
       - name: Check Playables compliance
         run: |
-          for g in prism-runner lantern-links island-ferry ink-path night-drift kicks-lab; do
+          for g in prism-runner lantern-links island-ferry ink-path night-drift kicks-lab potion-sort ramen-rush putt-garden; do
             node tools/check-bundle.mjs "$g"
             cmp shared/ytsdk.js "$g/ytsdk.js"
           done
 
-      - name: Verify Ink Path levels and Kicks Lab orders
+      - name: Verify game content (levels, orders, holes)
         run: |
           node tools/ink-path-verify.cjs
           node tools/kicks-lab-verify.cjs
+          node tools/potion-sort-verify.cjs
+          node tools/ramen-rush-verify.cjs
+          node tools/putt-garden-verify.cjs
 
       - name: Assemble site
         run: |
           mkdir -p _site
           cp -r site/. _site/
-          for g in prism-runner lantern-links island-ferry ink-path night-drift kicks-lab; do
+          for g in prism-runner lantern-links island-ferry ink-path night-drift kicks-lab potion-sort ramen-rush putt-garden; do
             mkdir -p "_site/$g"
             cp -r "$g/." "_site/$g/"
             rm -f "_site/$g/README.md"
