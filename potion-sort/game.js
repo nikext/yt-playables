@@ -753,7 +753,7 @@
     var portrait = H > W * 1.1;
     var m = Math.max(16, U * 2.5);
     var fs = clamp(Math.min(W * 0.14, H * 0.13), 40, 104);
-    var ty = portrait ? H * 0.17 : H * 0.2;
+    var ty = portrait ? H * 0.17 : H * 0.175;
     // title
     ctx.save();
     ctx.font = A.font(fs, 900); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -771,9 +771,18 @@
     var shelfY = portrait ? H * 0.53 : H * 0.6;
     var rowW = n * fw * 1.8;
     A.plank(ctx, W / 2 - rowW / 2 - fw * 0.6, W / 2 + rowW / 2 + fw * 0.6, shelfY, fw * 0.24);
-    var cw = clamp(fw * 0.34, 10, 22);
-    A.candle(ctx, W / 2 - rowW / 2 - fw * 1.6, shelfY, cw, cw * 3.3, now, 2);
-    A.candle(ctx, W / 2 + rowW / 2 + fw * 1.6, shelfY, cw, cw * 2.5, now, 5);
+    var cw = clamp(fw * 0.42, 11, 28);
+    if (W / 2 - rowW / 2 - fw * 1.6 > cw * 2) {
+      A.candle(ctx, W / 2 - rowW / 2 - fw * 1.6, shelfY, cw, cw * 3.3, now, 2);
+      A.candle(ctx, W / 2 + rowW / 2 + fw * 1.6, shelfY, cw, cw * 2.5, now, 5);
+    } else {
+      // narrow screens: a low shelf with candles at the bottom
+      var ly2 = H - Math.max(16, U * 4) - cw * 0.6;
+      A.plank(ctx, -cw, W + cw, ly2, fw * 0.24);
+      A.candle(ctx, W * 0.16, ly2, cw * 1.1, cw * 3.6, now, 2);
+      A.candle(ctx, W * 0.27, ly2, cw * 0.9, cw * 2.2, now, 7);
+      A.candle(ctx, W * 0.84, ly2, cw * 1.1, cw * 2.9, now, 5);
+    }
     var saveG = G; G = null;
     for (var i = 0; i < n; i++) {
       var cols = titleFlasks[i], segN = 0;
@@ -1090,7 +1099,7 @@
       return {
         screen: screen, ready: ready, level: G ? G.idx : -1, moves: G ? G.moves : 0, par: G ? G.par : 0, won: G ? G.won : false,
         clear: !!(G && G.clear), stars: G && G.clear ? G.clear.stars : 0, total: totalStars(), add: save.add, sel: G ? G.sel : -1,
-        flasks: G ? G.fl.length : 0, anims: G ? G.anims.length : 0, stuck: G ? G.stuck : 0, lang: lang, paused: paused, tut: save.tut
+        flasks: G ? G.fl.length : 0, fl: G ? G.fl.map(function (a) { return a.slice(); }) : null, anims: G ? G.anims.length : 0, stuck: G ? G.stuck : 0, lang: lang, paused: paused, tut: save.tut
       };
     },
     flask: function (f) { var p = LY && LY.pos[f]; return p ? { x: p.x, y: p.y - GEO.FH * LY.w * 0.5 } : null; },
